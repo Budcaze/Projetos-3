@@ -1,2 +1,2 @@
-# Projetos-3
-Repositório para os códigos de Projetos 3
+# PSI-3
+Repositório destinado para a disciplina de Projetos-Interdisciplinar III
