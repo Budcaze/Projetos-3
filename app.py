@@ -5,7 +5,7 @@ import streamlit as st
 st.set_page_config(page_title="Acidentes Recife", #Aqui eu configuro o setpage ou seja, informo as infos da página quando eu criar
     page_icon=":kissing_smiling_eyes:",
     layout="wide")
-df = pd.read_excel("Projetos-3/data/DataSetAcidentesRecife.xlsx") #Aqui eu abro o nosso dataset
+df = pd.read_excel("data/DataSetAcidentesRecife.xlsx") #Aqui eu abro o nosso dataset
 
 
 # SIDEBAR
@@ -13,14 +13,14 @@ st.sidebar.header("Filtre aqui por ano:") #Cada SIDEBAR é composto pelo cabeça
 ano = st.sidebar.multiselect(
     "Selecione o ano: ",
     options=df["Ano"].unique(),
-    default=df["Ano"].unique()
+    
 )
 
 st.sidebar.header("Filtre aqui por natureza do acidente:")
 nat_acidente = st.sidebar.multiselect(
     "Selecione a natureza do acidente: ",
     options=df["natureza_acidente"].unique(),
-    default=df["natureza_acidente"].unique()
+   
 )
 
 st.sidebar.header("Filtre aqui por bairro :")
@@ -33,7 +33,7 @@ st.sidebar.header("Filtre aqui por tempo_clima:")
 tempo_clima = st.sidebar.multiselect(
     "Selecione o tempo clima: ",
     options=df["tempo_clima"].unique(),
-    default=df["tempo_clima"].unique()
+    
 )
 
 df_selection = df.query( #Aqui eu vou atribuir a varivavel que eu criei nos sidebars as colunas do dataset
