@@ -7,3 +7,6 @@ pip install streamlit
 pip install openpyxl
 pip install plotly-express
 
+# Executar o código
+streamlit run 'nome do arquivo.py'
+
