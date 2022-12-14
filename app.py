@@ -13,14 +13,14 @@ st.sidebar.header("Filtre aqui por ano:") #Cada SIDEBAR é composto pelo cabeça
 ano = st.sidebar.multiselect(
     "Selecione o ano: ",
     options=df["Ano"].unique(),
-    default=df["Ano"].unique()
+    
 )
 
 st.sidebar.header("Filtre aqui por natureza do acidente:")
 nat_acidente = st.sidebar.multiselect(
     "Selecione a natureza do acidente: ",
     options=df["natureza_acidente"].unique(),
-    default=df["natureza_acidente"].unique()
+   
 )
 
 st.sidebar.header("Filtre aqui por bairro :")
@@ -33,7 +33,7 @@ st.sidebar.header("Filtre aqui por tempo_clima:")
 tempo_clima = st.sidebar.multiselect(
     "Selecione o tempo clima: ",
     options=df["tempo_clima"].unique(),
-    default=df["tempo_clima"].unique()
+    
 )
 
 df_selection = df.query( #Aqui eu vou atribuir a varivavel que eu criei nos sidebars as colunas do dataset
