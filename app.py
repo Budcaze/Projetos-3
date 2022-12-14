@@ -1,6 +1,7 @@
 import pandas as pd
 import plotly.express as px
 import streamlit as st
+import altair as alt
 
 st.set_page_config(page_title="Acidentes Recife", #Aqui eu configuro o setpage ou seja, informo as infos da página quando eu criar
     page_icon=":kissing_smiling_eyes:",
@@ -45,21 +46,25 @@ st.dataframe(df_selection) #Aqui eu chamo nosso dataset para ele aparecer
 
 
 
-vitimas_por_clima = df_selection.dropna().groupby(by=["tempo_clima"]).sum()[["vitimas"]]
-n_acidentes = px.bar(
-    vitimas_por_clima,
-    x=vitimas_por_clima.index,
-    y="vitimas",
-    title="<b>vitimas_por_clima</b>",
-    color_discrete_sequence=["#0083B8"] * len(vitimas_por_clima),
-    template="plotly_white",
+
+bar_chart = alt.Chart(df).mark_bar().encode(
+    y= 'vitimas',
+    x= 'acidente_verificado'
 )
-n_acidentes.update_layout(
-    xaxis=dict(tickmode="linear"),
-    plot_bgcolor="rgba(0,0,0,0)",
-    yaxis=(dict(showgrid=False)),
+st.altair_chart(bar_chart, use_container_width=True)
+
+
+bar_chart = alt.Chart(df).mark_bar().encode(
+    y= 'vitimas',
+    x= 'condicao_via'
 )
-st.plotly_chart(vitimas_por_clima)
+st.altair_chart(bar_chart, use_container_width=True)
+
+bar_chart = alt.Chart(df).mark_bar().encode(
+    y= 'vitimas',
+    x= 'bairro'
+)
+st.altair_chart(bar_chart, use_container_width=True)
 
 
 
