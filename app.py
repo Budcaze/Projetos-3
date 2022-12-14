@@ -13,27 +13,28 @@ st.sidebar.header("Filtre aqui por ano:") #Cada SIDEBAR é composto pelo cabeça
 ano = st.sidebar.multiselect(
     "Selecione o ano: ",
     options=df["Ano"].unique(),
-    
+    default=df["Ano"].unique()
 )
 
 st.sidebar.header("Filtre aqui por natureza do acidente:")
 nat_acidente = st.sidebar.multiselect(
     "Selecione a natureza do acidente: ",
     options=df["natureza_acidente"].unique(),
-   
+    default=df["natureza_acidente"].unique()
 )
 
 st.sidebar.header("Filtre aqui por bairro :")
 bairro = st.sidebar.multiselect(
     "Selecione o bairro: ",
-    options=df["bairro"].unique()
+    options=df["bairro"].unique(),
+    default=df["bairro"].unique()
 )
 
 st.sidebar.header("Filtre aqui por tempo_clima:")
 tempo_clima = st.sidebar.multiselect(
     "Selecione o tempo clima: ",
     options=df["tempo_clima"].unique(),
-    
+    default=df["tempo_clima"].unique()
 )
 
 df_selection = df.query( #Aqui eu vou atribuir a varivavel que eu criei nos sidebars as colunas do dataset
@@ -44,10 +45,21 @@ st.dataframe(df_selection) #Aqui eu chamo nosso dataset para ele aparecer
 
 
 
-
-
-
-
+vitimas_por_clima = df_selection.dropna().groupby(by=["tempo_clima"]).sum()[["vitimas"]]
+n_acidentes = px.bar(
+    vitimas_por_clima,
+    x=vitimas_por_clima.index,
+    y="vitimas",
+    title="<b>vitimas_por_clima</b>",
+    color_discrete_sequence=["#0083B8"] * len(vitimas_por_clima),
+    template="plotly_white",
+)
+n_acidentes.update_layout(
+    xaxis=dict(tickmode="linear"),
+    plot_bgcolor="rgba(0,0,0,0)",
+    yaxis=(dict(showgrid=False)),
+)
+st.plotly_chart(vitimas_por_clima)
 
 
 
