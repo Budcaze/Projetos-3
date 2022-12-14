@@ -5,7 +5,7 @@ import streamlit as st
 st.set_page_config(page_title="Acidentes Recife", #Aqui eu configuro o setpage ou seja, informo as infos da página quando eu criar
     page_icon=":kissing_smiling_eyes:",
     layout="wide")
-df = pd.read_excel("Projetos-3/data/DataSetAcidentesRecife.xlsx") #Aqui eu abro o nosso dataset
+df = pd.read_excel("data/DataSetAcidentesRecife.xlsx") #Aqui eu abro o nosso dataset
 
 
 # SIDEBAR
@@ -45,3 +45,20 @@ st.dataframe(df_selection) #Aqui eu chamo nosso dataset para ele aparecer
 
 
 
+
+
+
+
+
+
+
+
+
+hide_st_style = """
+            <style>
+            #MainMenu {visibility: hidden;}
+            footer {visibility: hidden;}
+            header {visibility: hidden;}
+            </style>
+            """
+st.markdown(hide_st_style, unsafe_allow_html=True)
