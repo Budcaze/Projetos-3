@@ -42,35 +42,3 @@ df_selection = df.query( #Aqui eu vou atribuir a varivavel que eu criei nos side
 )
 st.dataframe(df_selection) #Aqui eu chamo nosso dataset para ele aparecer
 
-
-
-
-vitimas_por_clima = df_selection.dropna().groupby(by=["tempo_clima"]).sum()[["vitimas"]]
-n_acidentes = px.bar(
-    vitimas_por_clima,
-    x=vitimas_por_clima.index,
-    y="vitimas",
-    title="<b>vitimas_por_clima</b>",
-    color_discrete_sequence=["#0083B8"] * len(vitimas_por_clima),
-    template="plotly_white",
-)
-n_acidentes.update_layout(
-    xaxis=dict(tickmode="linear"),
-    plot_bgcolor="rgba(0,0,0,0)",
-    yaxis=(dict(showgrid=False)),
-)
-st.plotly_chart(vitimas_por_clima)
-
-
-
-
-
-
-hide_st_style = """
-            <style>
-            #MainMenu {visibility: hidden;}
-            footer {visibility: hidden;}
-            header {visibility: hidden;}
-            </style>
-            """
-st.markdown(hide_st_style, unsafe_allow_html=True)
