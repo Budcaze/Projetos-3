@@ -4,9 +4,9 @@ import streamlit as st
 import altair as alt
 
 st.set_page_config(page_title="Acidentes Recife", #Aqui eu configuro o setpage ou seja, informo as infos da página quando eu criar
-    page_icon=":kissing_smiling_eyes:",
+    page_icon=":warning:",
     layout="wide")
-df = pd.read_excel("data/DataSetAcidentesRecife.xlsx") #Aqui eu abro o nosso dataset
+df = pd.read_parquet("data/DataSetAcidentesRecife.parquet") #Aqui eu abro o nosso dataset
 
 
 # SIDEBAR
@@ -44,26 +44,41 @@ df_selection = df.query( #Aqui eu vou atribuir a varivavel que eu criei nos side
 st.dataframe(df_selection) #Aqui eu chamo nosso dataset para ele aparecer
 
 
+##### Gráficos #####
+
+#Vítimas fatais por ano  (Interativo)
+df_selection.rename(columns={'vitimasfatais':'Vítimas Fatais'}, inplace=True) # altera o nome da coluna
+vitimasFatais = df_selection.groupby(['Ano']).sum(numeric_only=True)['Vítimas Fatais'] # soma o total de vítimas fatais em cada ano
+st.bar_chart(vitimasFatais)
+
+# Acidentes de acordo com o clima
 
 
 
-bar_chart = alt.Chart(df).mark_bar().encode(
+# Vítimas x Acidentes Verificados (Interativo)
+VitimasAcidentesVerificados = df_selection[['acidente_verificado', 'vitimas']]
+
+bar_chart = alt.Chart(VitimasAcidentesVerificados).mark_bar().encode(
     y= 'vitimas',
     x= 'acidente_verificado'
 )
 st.altair_chart(bar_chart, use_container_width=True)
 
 
-bar_chart = alt.Chart(df).mark_bar().encode(
+# Vítimas x Condição da Via (Interativo)
+VitimasCondicaoVia = df_selection[['condicao_via', 'vitimas']]
+bar_chart = alt.Chart(VitimasCondicaoVia).mark_bar().encode(
     y= 'vitimas',
     x= 'condicao_via'
 )
 st.altair_chart(bar_chart, use_container_width=True)
 
-bar_chart = alt.Chart(df).mark_bar().encode(
-    y= 'vitimas',
-    x= 'bairro'
-)
+# Vítimas x Bairro (Interativo)
+VitimasBairro = df_selection[['bairro', 'vitimas']]
+bar_chart = alt.Chart(VitimasBairro).mark_bar().encode(
+    y= 'bairro',    
+    x= 'vitimas'
+).properties(height=700)
 st.altair_chart(bar_chart, use_container_width=True)
 
 

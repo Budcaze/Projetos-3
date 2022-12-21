@@ -1,6 +1,6 @@
 import pandas as pd
     # Abertura do DataSet
-df = pd.read_excel("data/DataSetAcidentesRecife.xlsx")
+df = pd.read_parquet("data/DataSetAcidentesRecife.parquet")
 df.rename(columns={'auto':'carro'}, inplace=True) # Alteração de nome de coluna
 
     # Resultado quantitavo anual de vitimas e vitimas fatais. Filtro = Ano
