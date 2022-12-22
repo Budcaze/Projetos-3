@@ -43,43 +43,51 @@ df_selection = df.query( #Aqui eu vou atribuir a varivavel que eu criei nos side
 )
 st.dataframe(df_selection) #Aqui eu chamo nosso dataset para ele aparecer
 
-<<<<<<< HEAD
-=======
+
 
 ##### Gráficos #####
 
 #Vítimas fatais por ano  (Interativo)
 df_selection.rename(columns={'vitimasfatais':'Vítimas Fatais'}, inplace=True) # altera o nome da coluna
+df_selection.rename(columns={'acidente_verificado':'Localização na via'}, inplace=True)
+df_selection.rename(columns={'condicao_via':'Condição da via'}, inplace=True)
+df_selection.rename(columns={'vitimas':'Número de vítimas'}, inplace=True)
+df_selection.rename(columns={'bairro':'Bairro'}, inplace=True)
+
+
+
 vitimasFatais = df_selection.groupby(['Ano']).sum(numeric_only=True)['Vítimas Fatais'] # soma o total de vítimas fatais em cada ano
 st.bar_chart(vitimasFatais)
+
 
 # Acidentes de acordo com o clima
 
 
 
-# Vítimas x Acidentes Verificados (Interativo)
-VitimasAcidentesVerificados = df_selection[['acidente_verificado', 'vitimas']]
 
-bar_chart = alt.Chart(VitimasAcidentesVerificados).mark_bar().encode(
-    y= 'vitimas',
-    x= 'acidente_verificado'
+# Vítimas x Acidentes Verificados (Interativo)
+VitimasLocalizaçãoVia = df_selection[['Localização na via', 'Número de vítimas']]
+
+bar_chart = alt.Chart(VitimasLocalizaçãoVia).mark_bar().encode(
+    y= 'Localização na via',
+    x= 'Número de vítimas'
 )
 st.altair_chart(bar_chart, use_container_width=True)
 
 
 # Vítimas x Condição da Via (Interativo)
-VitimasCondicaoVia = df_selection[['condicao_via', 'vitimas']]
+VitimasCondicaoVia = df_selection[['Condição da via', 'Número de vítimas']]
 bar_chart = alt.Chart(VitimasCondicaoVia).mark_bar().encode(
-    y= 'vitimas',
-    x= 'condicao_via'
+    y= 'Condição da via',
+    x= 'Número de vítimas'
 )
 st.altair_chart(bar_chart, use_container_width=True)
 
 # Vítimas x Bairro (Interativo)
-VitimasBairro = df_selection[['bairro', 'vitimas']]
+VitimasBairro = df_selection[['Bairro', 'Número de vítimas']]
 bar_chart = alt.Chart(VitimasBairro).mark_bar().encode(
-    y= 'bairro',    
-    x= 'vitimas'
+    y= 'Bairro',    
+    x= 'Número de vítimas'
 ).properties(height=700)
 st.altair_chart(bar_chart, use_container_width=True)
 
@@ -96,4 +104,3 @@ hide_st_style = """
             </style>
             """
 st.markdown(hide_st_style, unsafe_allow_html=True)
->>>>>>> 9d55a6abe0777310df411aeb6cda0610e3d4cdfd
