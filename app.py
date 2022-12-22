@@ -85,12 +85,14 @@ st.altair_chart(bar_chart, use_container_width=True)
 
 # Vítimas x Bairro (Interativo)
 VitimasBairro = df_selection[['Bairro', 'Número de vítimas']]
+VitimasBairro['Número de vítimas'] = VitimasBairro['Número de vítimas'].fillna(0) #substitui o vazio por 0
+VitimasBairro['Número de vítimas'] = VitimasBairro['Número de vítimas'].astype('int64') # Converte par inteiro
+VitimasBairro['Número de vítimas'] = VitimasBairro['Número de vítimas'].sum()   #soma a coluna
 bar_chart = alt.Chart(VitimasBairro).mark_bar().encode(
     y= 'Bairro',    
     x= 'Número de vítimas'
 ).properties(height=700)
 st.altair_chart(bar_chart, use_container_width=True)
-
 
 
 
