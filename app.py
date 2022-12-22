@@ -49,10 +49,10 @@ st.dataframe(df_selection) #Aqui eu chamo nosso dataset para ele aparecer
 
 #Vítimas fatais por ano  (Interativo)
 df_selection.rename(columns={'vitimasfatais':'Vítimas Fatais'}, inplace=True) # altera o nome da coluna
-df_selection.rename(columns={'acidente_verificado':'Localização na via'}, inplace=True)
-df_selection.rename(columns={'condicao_via':'Condição da via'}, inplace=True)
-df_selection.rename(columns={'vitimas':'Número de vítimas'}, inplace=True)
-df_selection.rename(columns={'bairro':'Bairro'}, inplace=True)
+df_selection.rename(columns={'acidente_verificado':'Localização na via'}, inplace=True) # altera o nome da coluna
+df_selection.rename(columns={'condicao_via':'Condição da via'}, inplace=True) # altera o nome da coluna
+df_selection.rename(columns={'vitimas':'Número de vítimas'}, inplace=True) # altera o nome da coluna
+df_selection.rename(columns={'bairro':'Bairro'}, inplace=True) # altera o nome da coluna
 
 
 
