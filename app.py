@@ -43,8 +43,6 @@ df_selection = df.query( #Aqui eu vou atribuir a varivavel que eu criei nos side
 )
 st.dataframe(df_selection) #Aqui eu chamo nosso dataset para ele aparecer
 
-<<<<<<< HEAD
-=======
 
 ##### Gráficos #####
 
@@ -78,7 +76,7 @@ st.altair_chart(bar_chart, use_container_width=True)
 # Vítimas x Bairro (Interativo)
 VitimasBairro = df_selection[['bairro', 'vitimas']]
 bar_chart = alt.Chart(VitimasBairro).mark_bar().encode(
-    y= 'bairro',    
+    y= 'bairro',  
     x= 'vitimas'
 ).properties(height=700)
 st.altair_chart(bar_chart, use_container_width=True)
@@ -96,4 +94,4 @@ hide_st_style = """
             </style>
             """
 st.markdown(hide_st_style, unsafe_allow_html=True)
->>>>>>> 9d55a6abe0777310df411aeb6cda0610e3d4cdfd
+
