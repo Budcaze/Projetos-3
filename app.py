@@ -27,10 +27,12 @@ ano = st.sidebar.multiselect(
 )
 
 st.sidebar.header("Filtre aqui por natureza do acidente:")
+mask = ~df["natureza_acidente"].isin(['0','1', None])   # define como false os valores da coluna iguais a '0', '1' e None
+filtrar_natureza = df["natureza_acidente"].loc[mask]    # seleciona apenas o valores com true
 nat_acidente = st.sidebar.multiselect(
     "Selecione a natureza do acidente: ",
-    options=df["natureza_acidente"].unique(),
-    default=df["natureza_acidente"].unique()
+    options=filtrar_natureza.unique(),
+    default=filtrar_natureza.unique()
 )
 
 st.sidebar.header("Filtre aqui por bairro :")
@@ -40,11 +42,13 @@ bairro = st.sidebar.multiselect(
     default=df["bairro"].unique()
 )
 
-st.sidebar.header("Filtre aqui por tempo_clima:")
+st.sidebar.header("Filtre aqui por Clima:")
+mask_clima = ~df["tempo_clima"].isin([None])    # define como false os valores da coluna iguais a None
+filtrar_clima = df["tempo_clima"].loc[mask_clima]   # seleciona apenas o valores com true
 tempo_clima = st.sidebar.multiselect(
     "Selecione o tempo clima: ",
-    options=df["tempo_clima"].unique(),
-    default=df["tempo_clima"].unique()
+    options=filtrar_clima.unique(),
+    default=filtrar_clima.unique()
 )
 
 
@@ -89,26 +93,27 @@ bar_chart = alt.Chart(VitimasFatais).mark_bar(color='red').encode(      # color=
 st.altair_chart(bar_chart, use_container_width=True)
 
 
-# Acidentes x Tempo x Ano
+# Acidentes x Clima x Ano
 data = df_selection['data']
 df_selection['data'] = pd.to_datetime(data)     # converte a coluna para o tipo date
-df_selection['data'] = df_selection['data'].dt.strftime('%b/%y') # seleciona apenas o mês e ano, ex: feb/21
+df_selection['data'] = df_selection['data'].dt.strftime('%y-%m') # seleciona apenas o mês e ano, ex: feb/21
 VitimasTempoAno = df_selection.groupby(['data','Clima'], as_index=False)['Número de vítimas'].sum()     # agrupa a quantidade vitimas por data e clima, as_index=False transforma a soma de vitimas em uma coluna
 
-bar_chart = alt.Chart(VitimasTempoAno).mark_circle(size=70).encode(
-    x= alt.X('data', title='Data'),     # alt.X permite alterar propriedades do eixo X
+bar_chart = alt.Chart(VitimasTempoAno).mark_circle(size=100).encode(
+    x= alt.X('data:O', title='Data'),     # alt.X permite alterar propriedades do eixo X
     y= 'Número de vítimas',
     color= 'Clima',         # passando uma coluna em color podemos ter uma cor para cada valor único
     tooltip=['Clima', 'Número de vítimas']  # informações que aparecem quando passamos o mouse
+).configure_axisX(      # propriedades do eixo x
+    labelAngle=0    # rotaciona os labels do eixo x
 ).properties(   # propriedades do gráfico
-    title='Quantidade de Vitimas x Tempo' # adiciona o titulo no gráfico
+    title='Quantidade de Vitimas x Clima' # adiciona o titulo no gráfico
 ).configure_title(  # formata o titulo
     fontSize = 20,
     anchor= 'middle',   # centraliza o titulo
     color= 'black'
 ) 
 st.altair_chart(bar_chart, use_container_width=True)
-
 
 # Localização na via x Número de vítimas (Interativo)
 VitimasLocalizaçãoVia = df_selection.groupby('Localização na via')['Número de vítimas'].sum()
@@ -125,7 +130,6 @@ bar_chart = alt.Chart(VitimasLocalizaçãoVia).mark_bar().encode(
     color= 'black'
 ) 
 st.altair_chart(bar_chart, use_container_width=True)
-
 
 # Vítimas x Condição da Via (Interativo)
 VitimasCondicaoVia = df_selection.groupby('Condição da via')['Número de vítimas'].sum()
