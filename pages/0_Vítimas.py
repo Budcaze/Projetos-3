@@ -7,7 +7,7 @@ st.set_page_config(page_title="Acidentes Recife", # Configuração do setpage, o
     layout="wide")
 df = pd.read_parquet("data/DataSetAcidentesRecife.parquet") # Abertura do DataSet.
 
-st.title("Filtros")
+st.title("Vítimas")
 
 # Converte o tipo das colunas para inteiro
 df['vitimas'] = df['vitimas'].fillna(0) # substitui o vazio por 0
@@ -69,30 +69,6 @@ df_selection.rename(columns={'condicao_via':'Condição da via'}, inplace=True) 
 df_selection.rename(columns={'vitimas':'Número de vítimas'}, inplace=True) # altera o nome da coluna
 df_selection.rename(columns={'bairro':'Bairro'}, inplace=True) # altera o nome da coluna
 df_selection.rename(columns={'tempo_clima':'Clima'}, inplace=True) # altera o nome da coluna
-
-
-
-#vitimasFatais = df_selection.groupby(['Ano']).sum(numeric_only=True)['Vítimas Fatais'] # soma o total de vítimas fatais em cada ano
-#st.bar_chart(vitimasFatais)
-
-# Vítimas Fatais x Ano
-VitimasFatais = df_selection.groupby(['Ano'])['Vítimas Fatais'].sum()
-VitimasFatais = VitimasFatais.reset_index()
-
-bar_chart = alt.Chart(VitimasFatais).mark_bar(color='red').encode(      # color= '', define a cor do gráfico
-    x= 'Ano',
-    y= 'Vítimas Fatais'
-).configure_axisX(      # propriedades do eixo x
-    labelAngle=0    # rotaciona os labels do eixo x
-).properties(   # propriedades do gráfico
-    title='Vítimas Fatais por Ano' # adiciona o titulo no gráfico
-).configure_title(  # formata o titulo
-    fontSize = 20,
-    anchor= 'middle',   # centraliza o titulo
-    color= 'black'
-) 
-st.altair_chart(bar_chart, use_container_width=True)
-
 
 # Acidentes x Clima x Ano
 data = df_selection['data']
