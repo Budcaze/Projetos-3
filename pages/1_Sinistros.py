@@ -7,7 +7,7 @@ st.set_page_config(page_title="Acidentes Recife", # Configuração do setpage, o
     layout="wide")
 df = pd.read_parquet("data/DataSetAcidentesRecife.parquet") # Abertura do DataSet.
 
-st.title("Filtros")
+st.title("Sinistros")
 
 # Converte o tipo das colunas para inteiro
 df['vitimas'] = df['vitimas'].fillna(0) # substitui o vazio por 0
@@ -42,21 +42,24 @@ tempo_clima = st.sidebar.multiselect(
     options=filtrar_clima.unique(),
     default=filtrar_clima.unique()
 )
-df_selection = df.query( #Aqui eu vou atribuir a varivavel que eu criei nos sidebars as colunas do dataset
-    "Ano == @ano & bairro == @bairro & tempo_clima == @tempo_clima" #O @ significa que estou chamando a varivel que criei lá no sidebar
+df_selection = df.query( # Aqui eu vou atribuir a variável que eu criei nos sidebars as colunas do dataset
+    "Ano == @ano & bairro == @bairro & tempo_clima == @tempo_clima" #O @ significa que estou chamando a variável que criei lá no sidebar
 )
-st.dataframe(df_selection) #Aqui eu chamo nosso dataset para ele aparecer
+st.dataframe(df_selection) # Abertura do Dataset
 
-#Vítimas fatais por ano  (Interativo)
-df_selection.rename(columns={'vitimasfatais':'Vítimas Fatais'}, inplace=True) # altera o nome da coluna
-df_selection.rename(columns={'acidente_verificado':'Localização na via'}, inplace=True) # altera o nome da coluna
-df_selection.rename(columns={'condicao_via':'Condição da via'}, inplace=True) # altera o nome da coluna
-df_selection.rename(columns={'vitimas':'Número de vítimas'}, inplace=True) # altera o nome da coluna
-df_selection.rename(columns={'bairro':'Bairro'}, inplace=True) # altera o nome da coluna
-df_selection.rename(columns={'tempo_clima':'Clima'}, inplace=True) # altera o nome da coluna
+# Alteração dos nomes das colunas
+df_selection.rename(columns={'vitimasfatais':'Vítimas Fatais'}, inplace=True)
+df_selection.rename(columns={'acidente_verificado':'Localização na via'}, inplace=True)
+df_selection.rename(columns={'condicao_via':'Condição da via'}, inplace=True)
+df_selection.rename(columns={'vitimas':'Número de vítimas'}, inplace=True)
+df_selection.rename(columns={'bairro':'Bairro'}, inplace=True)
+df_selection.rename(columns={'tempo_clima':'Clima'}, inplace=True)
 
+#Vítimas fatais por ano (Interativo)
 VitimasFatais = df_selection.groupby(['Ano'])['Vítimas Fatais'].sum()
 VitimasFatais = VitimasFatais.reset_index()
+
+st.write(df.groupby(['Ano']).sum()[['vitimasfatais']].sort_values(by='Ano'))
 
 bar_chart = alt.Chart(VitimasFatais).mark_bar(color='red').encode(      # color= '', define a cor do gráfico
     x= 'Ano',
