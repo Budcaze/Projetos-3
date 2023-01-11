@@ -55,7 +55,8 @@ df_selection.rename(columns={'vitimas':'Número de vítimas'}, inplace=True)
 df_selection.rename(columns={'bairro':'Bairro'}, inplace=True)
 df_selection.rename(columns={'tempo_clima':'Clima'}, inplace=True)
 
-#Vítimas fatais por ano (Interativo)
+
+
 VitimasFatais = df_selection.groupby(['Ano'])['Vítimas Fatais'].sum()
 VitimasFatais = VitimasFatais.reset_index()
 
@@ -77,6 +78,7 @@ st.altair_chart(bar_chart, use_container_width=True)
 
 VitimasBairro = df_selection.groupby('Bairro')['Vítimas Fatais'].sum()
 VitimasBairro = VitimasBairro.reset_index()
+
 bar_chart = alt.Chart(VitimasBairro).mark_bar(color='#D33210').encode(
     y= alt.Y('Bairro', sort='-x'), # sort='-x' ordena Y em ordem decrescente de acordo com os valores do eixo X
     x= 'Vítimas Fatais',
@@ -91,9 +93,4 @@ st.altair_chart(bar_chart, use_container_width=True)
 
 VitimasClima = df_selection.groupby('Clima')['Vítimas Fatais'].sum()
 VitimasClima = VitimasBairro.reset_index()
-source = pd.DataFrame({"category": [1, 2, 3, 4, 5, 6], "value": [4, 6, 10, 3, 7, 8]})
 
-alt.Chart(source).mark_arc(innerRadius=50).encode(
-    theta=alt.Theta(field="value", type="quantitative"),
-    color=alt.Color(field="category", type="nominal"),
-)
