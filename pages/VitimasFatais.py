@@ -7,7 +7,7 @@ st.set_page_config(page_title="Acidentes Recife", # Configuração do setpage, o
     layout="wide")
 df = pd.read_parquet("data/DataSetAcidentesRecife.parquet") # Abertura do DataSet.
 
-st.title("Filtros")
+st.title("Vitimas Fatais")
 
 # Converte o tipo das colunas para inteiro
 df['vitimas'] = df['vitimas'].fillna(0) # substitui o vazio por 0
@@ -90,5 +90,12 @@ bar_chart = alt.Chart(VitimasBairro).mark_bar(color='#D33210').encode(
 st.altair_chart(bar_chart, use_container_width=True)
 
 VitimasClima = df_selection.groupby('Clima')['Vítimas Fatais'].sum()
-VitimasClima = VitimasBairro.reset_index()
+VitimasClima = VitimasFatais.reset_index()
+
+source = pd.DataFrame({"category": ["Bom", "Chuvoso", "Nublado"], "value": [12, 6, 10,]})
+
+alt.Chart(source).mark_arc(innerRadius=50).encode(
+    theta=alt.Theta(field="value", type="quantitative"),
+    color=alt.Color(field="category", type="nominal"),
+)
 
