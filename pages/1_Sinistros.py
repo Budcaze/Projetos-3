@@ -96,12 +96,18 @@ bar_chart = alt.Chart(VitimasBairro).mark_bar(color='#D33210').encode(
 st.altair_chart(bar_chart, use_container_width=True)
 
 VitimasClima = df_selection.groupby('Clima')['Vítimas Fatais'].sum()
+VitimasClimaBom = VitimasClima
+# VitimasClimaChuvoso =
+# VitimasClimaNublado = 
 VitimasClima = VitimasFatais.reset_index()
 
-source = pd.DataFrame({"category": ["Bom", "Chuvoso", "Nublado"], "value": [12, 6, 10,]})
+source = pd.DataFrame({"category": ["Bom", "Chuvoso", "Nublado"], "value": [VitimasClimaBom, 6, 10,]})
 
-alt.Chart(source).mark_arc(innerRadius=50).encode(
+Donut = alt.Chart(source).mark_arc(innerRadius=50).encode(
     theta=alt.Theta(field="value", type="quantitative"),
     color=alt.Color(field="category", type="nominal"),
+).properties(
+    title = "Vítimas Fatais por Clima"
 )
+st.altair_chart(Donut, use_container_width=True)
 
