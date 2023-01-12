@@ -80,6 +80,42 @@ bar_chart = alt.Chart(VitimasFatais).mark_bar(color='red').encode(      # color=
 ) 
 st.altair_chart(bar_chart, use_container_width=True)
 
+# Acidentes x Clima
+VitimasTempoAno = df_selection.groupby('Clima')['Número de vítimas'].sum()
+VitimasTempoAno = VitimasTempoAno.reset_index() # transforma o index em uma coluna
+
+pie_chart = alt.Chart(VitimasTempoAno).mark_arc().encode(
+    theta=alt.Theta(field="Número de vítimas", type="quantitative"),
+    color=alt.Color(field="Clima", type="nominal"),
+).properties(   # propriedades do gráfico
+    title='Quantidade de Vitimas x Clima' # adiciona o titulo no gráfico
+).configure_title(  # formata o titulo
+    fontSize = 20,
+    anchor= 'middle',   # centraliza o titulo
+    color= 'black'
+) 
+st.altair_chart(pie_chart, use_container_width=True)
+
+
+
+# Vítimas x Condição da Via (Interativo)
+VitimasCondicaoVia = df_selection.groupby('Condição da via')['Número de vítimas'].sum()
+VitimasCondicaoVia = VitimasCondicaoVia.reset_index() # transforma o index em uma coluna
+
+pie_chart = alt.Chart(VitimasCondicaoVia).mark_arc().encode(
+    theta=alt.Theta(field="Número de vítimas", type="quantitative"),
+    color=alt.Color(field="Condição da via", type="nominal"),
+).properties(   # propriedades do gráfico
+    title='Vítimas x Condição da Via' # adiciona o titulo no gráfico
+).configure_title(  # formata o titulo
+    fontSize = 20,  # tamanho da fonte
+    anchor= 'middle',   # centraliza o titulo
+    color= 'black'  # cor do titulo
+)  
+st.altair_chart(pie_chart, use_container_width=True)
+
+
+
 VitimasBairro = df_selection.groupby('Bairro')['Vítimas Fatais'].sum()
 VitimasBairro = VitimasBairro.reset_index()
 

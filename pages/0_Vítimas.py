@@ -73,7 +73,28 @@ bar_chart = alt.Chart(VitimasTotais).mark_bar(color='#00BFFF').encode(      # co
 ) 
 st.altair_chart(bar_chart, use_container_width=True)
 
-# Acidentes x Clima x Ano
+
+st.write(df.groupby('Ano')['Ano'].transform('count'))
+
+#AcidentesTotais = df_selection.groupby('Ano')[df['Freq'][1]]
+#AcidentesTotais = AcidentesTotais.reset_index()
+
+#bar_chart = alt.Chart(AcidentesTotais).mark_bar(color='#00BFFF').encode(      # color= '', define a cor do gráfico
+#    x= 'Ano',
+#    y= 'Número de acidentes'
+#).configure_axisX(      # propriedades do eixo x
+#    labelAngle=0    # rotaciona os labels do eixo x
+#).properties(   # propriedades do gráfico
+#    title='Total de Acidentes' # adiciona o titulo no gráfico
+#).configure_title(  # formata o titulo
+#    fontSize = 20,
+#    anchor= 'middle',   # centraliza o titulo
+#    color= 'black'
+#) 
+#st.altair_chart(bar_chart, use_container_width=True)
+
+
+# Acidentes x Clima
 VitimasTempoAno = df_selection.groupby('Clima')['Número de vítimas'].sum()
 VitimasTempoAno = VitimasTempoAno.reset_index() # transforma o index em uma coluna
 
