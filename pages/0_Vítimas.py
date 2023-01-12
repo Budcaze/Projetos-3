@@ -73,8 +73,26 @@ bar_chart = alt.Chart(VitimasTotais).mark_bar(color='#00BFFF').encode(      # co
 ) 
 st.altair_chart(bar_chart, use_container_width=True)
 
+#Valores totais de acidentes por ano (quantidade de vezes que cada ano aparece no dataset)
 
-st.write(df.groupby('Ano')['Ano'].transform('count'))
+lista = df.groupby('Ano')['Ano'].transform('count')
+st.write(lista) #teste visual comrpovando número de vezes que x Ano está rpesente
+ano2015 = lista.loc[0] #linha 0 (inicial que é 2015) nessa 'lista' feita com o groupby
+indiceDeComeco = ano2015 #indiceDeComeco seta em que linha começará o próximo ano
+ano2016 = lista.loc[indiceDeComeco] #linha buscada de acordo com fim da contagem dos anos anteriores
+indiceDeComeco += ano2016
+ano2017 = lista.loc[indiceDeComeco]
+indiceDeComeco += ano2017
+ano2018 = lista.loc[indiceDeComeco]
+indiceDeComeco += ano2018
+ano2019 = lista.loc[indiceDeComeco]
+indiceDeComeco += ano2019
+ano2020 = lista.loc[indiceDeComeco]
+indiceDeComeco += ano2020
+ano2021 = lista.loc[indiceDeComeco]
+
+st.write('Ano 2015: ', ano2015, 'Ano 2016: ', ano2016, 'Ano 2017: ', ano2017, 'Ano 2018: ', 
+ano2018, 'Ano 2019: ', ano2019, 'Ano 2020: ', ano2020, 'Ano 2021: ', ano2021) #demonstração valores encontrados
 
 #AcidentesTotais = df_selection.groupby('Ano')[df['Freq'][1]]
 #AcidentesTotais = AcidentesTotais.reset_index()
