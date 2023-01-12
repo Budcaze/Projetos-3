@@ -27,14 +27,7 @@ ano = st.sidebar.multiselect(
     default=df["Ano"].unique()
 )
 
-st.sidebar.header("Filtre aqui por natureza do acidente:")
-mask = ~df["natureza_acidente"].isin(['0','1', None])   # define como false os valores da coluna iguais a '0', '1' e None
-filtrar_natureza = df["natureza_acidente"].loc[mask]    # seleciona apenas o valores com true
-nat_acidente = st.sidebar.multiselect(
-    "Selecione a natureza do acidente: ",
-    options=filtrar_natureza.unique(),
-    default=filtrar_natureza.unique()
-)
+
 
 st.sidebar.header("Filtre aqui por bairro :")
 bairro = st.sidebar.multiselect(
@@ -43,18 +36,10 @@ bairro = st.sidebar.multiselect(
     default=df["bairro"].unique()
 )
 
-st.sidebar.header("Filtre aqui por Clima:")
-mask_clima = ~df["tempo_clima"].isin([None])    # define como false os valores da coluna iguais a None
-filtrar_clima = df["tempo_clima"].loc[mask_clima]   # seleciona apenas o valores com true
-tempo_clima = st.sidebar.multiselect(
-    "Selecione o tempo clima: ",
-    options=filtrar_clima.unique(),
-    default=filtrar_clima.unique()
-)
 
 
 df_selection = df.query( #Aqui eu vou atribuir a varivavel que eu criei nos sidebars as colunas do dataset
-    "Ano == @ano & natureza_acidente == @nat_acidente & bairro == @bairro & tempo_clima == @tempo_clima" #O @ significa que estou chamando a varivel que criei lá no sidebar
+    "Ano == @ano & bairro == @bairro" #O @ significa que estou chamando a varivel que criei lá no sidebar
 )
 st.dataframe(df_selection) #Aqui eu chamo nosso dataset para ele aparecer
 
@@ -69,6 +54,24 @@ df_selection.rename(columns={'condicao_via':'Condição da via'}, inplace=True) 
 df_selection.rename(columns={'vitimas':'Número de vítimas'}, inplace=True) # altera o nome da coluna
 df_selection.rename(columns={'bairro':'Bairro'}, inplace=True) # altera o nome da coluna
 df_selection.rename(columns={'tempo_clima':'Clima'}, inplace=True) # altera o nome da coluna
+
+VitimasTotais = df_selection.groupby(['Ano'])['Número de vítimas'].sum()
+VitimasTotais = VitimasTotais.reset_index()
+
+
+bar_chart = alt.Chart(VitimasTotais).mark_bar(color='#00BFFF').encode(      # color= '', define a cor do gráfico
+    x= 'Ano',
+    y= 'Número de vítimas'
+).configure_axisX(      # propriedades do eixo x
+    labelAngle=0    # rotaciona os labels do eixo x
+).properties(   # propriedades do gráfico
+    title='Total de Vítimas' # adiciona o titulo no gráfico
+).configure_title(  # formata o titulo
+    fontSize = 20,
+    anchor= 'middle',   # centraliza o titulo
+    color= 'black'
+) 
+st.altair_chart(bar_chart, use_container_width=True)
 
 # Acidentes x Clima x Ano
 data = df_selection['data']
@@ -92,21 +95,7 @@ bar_chart = alt.Chart(VitimasTempoAno).mark_circle(size=100).encode(
 ) 
 st.altair_chart(bar_chart, use_container_width=True)
 
-# Localização na via x Número de vítimas (Interativo)
-VitimasLocalizaçãoVia = df_selection.groupby('Localização na via')['Número de vítimas'].sum()
-VitimasLocalizaçãoVia = VitimasLocalizaçãoVia.reset_index() # transforma o index em coluna
 
-bar_chart = alt.Chart(VitimasLocalizaçãoVia).mark_bar().encode(
-    y= alt.Y('Localização na via', sort='-x'),  # sort='-x' ordena Y em ordem decrescente de acordo com os valores do eixo X
-    x= 'Número de vítimas'
-).properties(   # propriedades do gráfico
-    title='Localização na via x Número de vítimas' # adiciona o titulo no gráfico
-).configure_title(  # formata o titulo
-    fontSize = 20,
-    anchor= 'middle',   # centraliza o titulo
-    color= 'black'
-) 
-st.altair_chart(bar_chart, use_container_width=True)
 
 # Vítimas x Condição da Via (Interativo)
 VitimasCondicaoVia = df_selection.groupby('Condição da via')['Número de vítimas'].sum()
@@ -127,10 +116,10 @@ st.altair_chart(bar_chart, use_container_width=True)
 # Vítimas x Bairro (Interativo)
 VitimasBairro = df_selection.groupby('Bairro')['Número de vítimas'].sum()
 VitimasBairro = VitimasBairro.reset_index()
-bar_chart = alt.Chart(VitimasBairro).mark_bar().encode(
+bar_chart = alt.Chart(VitimasBairro).mark_bar(color='#7FFFD4').encode(
     y= alt.Y('Bairro', sort='-x'), # sort='-x' ordena Y em ordem decrescente de acordo com os valores do eixo X
     x= 'Número de vítimas',
-    color='Número de vítimas'
+    
 ).properties(   # propriedades do gráfico
     title='Vítimas por Bairro' # adiciona o titulo no gráfico
 ).configure_title(  # formata o titulo

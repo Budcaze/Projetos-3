@@ -14,7 +14,7 @@ print(df.groupby(['Ano']).sum()[['moto', 'carro', 'caminhao','onibus']].sort_val
 print(df.groupby(['Ano', 'condicao_via']).sum()[['moto', 'carro', 'caminhao','onibus']].sort_values(by='Ano'))
 
     # Quantitativo anual de acidentes com vitimas por Bairro. Filtro = Bairro
-print(df.groupby(['bairro']).sum()[['vitimas']].sort_values(by='bairro'))
+print(df.groupby(['bairro']).sum()[['vitimasfatais']].sort_values(by='bairro'))
 
     # Quantitativo anual de acidentes com vitimas por região da via. Filtro = Localização na via
 print(df.groupby(['Localização na via']).sum()[['vitimas']].sort_values(by='Localização na via'))

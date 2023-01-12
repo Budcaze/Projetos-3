@@ -47,7 +47,7 @@ tempo_clima = st.sidebar.multiselect(
     default=filtrar_clima.unique()
 )
 df_selection = df.query( # Aqui eu vou atribuir a variável que eu criei nos sidebars as colunas do dataset
-    "Ano == @ano & bairro == @bairro & tempo_clima == @tempo_clima" #O @ significa que estou chamando a variável que criei lá no sidebar
+    "Ano == @ano & bairro == @bairro" #O @ significa que estou chamando a variável que criei lá no sidebar
 )
 st.dataframe(df_selection) # Abertura do Dataset
 
@@ -95,19 +95,5 @@ bar_chart = alt.Chart(VitimasBairro).mark_bar(color='#D33210').encode(
 )  
 st.altair_chart(bar_chart, use_container_width=True)
 
-VitimasClima = df_selection.groupby('Clima')['Vítimas Fatais'].sum()
-VitimasClimaBom = VitimasClima
-# VitimasClimaChuvoso =
-# VitimasClimaNublado = 
-VitimasClima = VitimasFatais.reset_index()
 
-source = pd.DataFrame({"category": ["Bom", "Chuvoso", "Nublado"], "value": [VitimasClimaBom, 6, 10,]})
-
-Donut = alt.Chart(source).mark_arc(innerRadius=50).encode(
-    theta=alt.Theta(field="value", type="quantitative"),
-    color=alt.Color(field="category", type="nominal"),
-).properties(
-    title = "Vítimas Fatais por Clima"
-)
-st.altair_chart(Donut, use_container_width=True)
 
