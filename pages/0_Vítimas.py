@@ -74,18 +74,12 @@ bar_chart = alt.Chart(VitimasTotais).mark_bar(color='#00BFFF').encode(      # co
 st.altair_chart(bar_chart, use_container_width=True)
 
 # Acidentes x Clima x Ano
-data = df_selection['data']
-df_selection['data'] = pd.to_datetime(data)     # converte a coluna para o tipo date
-df_selection['data'] = df_selection['data'].dt.strftime('%y-%m') # seleciona apenas o mês e ano, ex: feb/21
-VitimasTempoAno = df_selection.groupby(['data','Clima'], as_index=False)['Número de vítimas'].sum()     # agrupa a quantidade vitimas por data e clima, as_index=False transforma a soma de vitimas em uma coluna
+VitimasTempoAno = df_selection.groupby('Clima')['Número de vítimas'].sum()
+VitimasTempoAno = VitimasTempoAno.reset_index() # transforma o index em uma coluna
 
-bar_chart = alt.Chart(VitimasTempoAno).mark_circle(size=100).encode(
-    x= alt.X('data:O', title='Data'),     # alt.X permite alterar propriedades do eixo X
-    y= 'Número de vítimas',
-    color= 'Clima',         # passando uma coluna em color podemos ter uma cor para cada valor único
-    tooltip=['Clima', 'Número de vítimas']  # informações que aparecem quando passamos o mouse
-).configure_axisX(      # propriedades do eixo x
-    labelAngle=0    # rotaciona os labels do eixo x
+pie_chart = alt.Chart(VitimasTempoAno).mark_arc().encode(
+    theta=alt.Theta(field="Número de vítimas", type="quantitative"),
+    color=alt.Color(field="Clima", type="nominal"),
 ).properties(   # propriedades do gráfico
     title='Quantidade de Vitimas x Clima' # adiciona o titulo no gráfico
 ).configure_title(  # formata o titulo
@@ -93,17 +87,17 @@ bar_chart = alt.Chart(VitimasTempoAno).mark_circle(size=100).encode(
     anchor= 'middle',   # centraliza o titulo
     color= 'black'
 ) 
-st.altair_chart(bar_chart, use_container_width=True)
+st.altair_chart(pie_chart, use_container_width=True)
 
 
 
 # Vítimas x Condição da Via (Interativo)
 VitimasCondicaoVia = df_selection.groupby('Condição da via')['Número de vítimas'].sum()
-VitimasCondicaoVia = VitimasCondicaoVia.reset_index()
-bar_chart = alt.Chart(VitimasCondicaoVia).mark_bar().encode(
-    y= alt.Y('Condição da via', sort='-x'), # sort='-x' ordena Y em ordem decrescente de acordo com os valores do eixo X
-    x= 'Número de vítimas',
-    color='Condição da via'  # passando uma coluna em color podemos ter uma cor para cada valor único
+VitimasCondicaoVia = VitimasCondicaoVia.reset_index() # transforma o index em uma coluna
+
+pie_chart = alt.Chart(VitimasCondicaoVia).mark_arc().encode(
+    theta=alt.Theta(field="Número de vítimas", type="quantitative"),
+    color=alt.Color(field="Condição da via", type="nominal"),
 ).properties(   # propriedades do gráfico
     title='Vítimas x Condição da Via' # adiciona o titulo no gráfico
 ).configure_title(  # formata o titulo
@@ -111,7 +105,7 @@ bar_chart = alt.Chart(VitimasCondicaoVia).mark_bar().encode(
     anchor= 'middle',   # centraliza o titulo
     color= 'black'  # cor do titulo
 )  
-st.altair_chart(bar_chart, use_container_width=True)
+st.altair_chart(pie_chart, use_container_width=True)
 
 # Vítimas x Bairro (Interativo)
 VitimasBairro = df_selection.groupby('Bairro')['Número de vítimas'].sum()
