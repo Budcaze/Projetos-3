@@ -22,3 +22,5 @@ print(df.groupby(['Localização na via']).sum()[['vitimas']].sort_values(by='Lo
 """
     Usar resultados das respectivas consultas acima para validar resultados apresentados no gráficos
 """
+
+print(df.groupby(['Ano']).sum()[['tempo_clima']].sort_values(by='Ano'))

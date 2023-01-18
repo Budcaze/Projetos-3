@@ -38,14 +38,7 @@ bairro = st.sidebar.multiselect(
     default=df["bairro"].unique()
 )
 
-st.sidebar.header("Filtre aqui por Clima:")
-mask_clima = ~df["tempo_clima"].isin([None])    # define como false os valores da coluna iguais a None
-filtrar_clima = df["tempo_clima"].loc[mask_clima]   # seleciona apenas o valores com true
-tempo_clima = st.sidebar.multiselect(
-    "Selecione o tempo clima: ",
-    options=filtrar_clima.unique(),
-    default=filtrar_clima.unique()
-)
+
 df_selection = df.query( # Aqui eu vou atribuir a variável que eu criei nos sidebars as colunas do dataset
     "Ano == @ano & bairro == @bairro" #O @ significa que estou chamando a variável que criei lá no sidebar
 )
@@ -81,14 +74,14 @@ bar_chart = alt.Chart(VitimasFatais).mark_bar(color='red').encode(      # color=
 st.altair_chart(bar_chart, use_container_width=True)
 
 # Acidentes x Clima
-VitimasTempoAno = df_selection.groupby('Clima')['Número de vítimas'].sum()
+VitimasTempoAno = df_selection.groupby('Clima')['Vítimas Fatais'].sum()
 VitimasTempoAno = VitimasTempoAno.reset_index() # transforma o index em uma coluna
 
 pie_chart = alt.Chart(VitimasTempoAno).mark_arc().encode(
-    theta=alt.Theta(field="Número de vítimas", type="quantitative"),
+    theta=alt.Theta(field="Vítimas Fatais", type="quantitative"),
     color=alt.Color(field="Clima", type="nominal"),
 ).properties(   # propriedades do gráfico
-    title='Quantidade de Vitimas x Clima' # adiciona o titulo no gráfico
+    title='Quantidade de Vitimas Fatais x Clima' # adiciona o titulo no gráfico
 ).configure_title(  # formata o titulo
     fontSize = 20,
     anchor= 'middle',   # centraliza o titulo
@@ -99,14 +92,14 @@ st.altair_chart(pie_chart, use_container_width=True)
 
 
 # Vítimas x Condição da Via (Interativo)
-VitimasCondicaoVia = df_selection.groupby('Condição da via')['Número de vítimas'].sum()
+VitimasCondicaoVia = df_selection.groupby('Condição da via')['Vítimas Fatais'].sum()
 VitimasCondicaoVia = VitimasCondicaoVia.reset_index() # transforma o index em uma coluna
 
 pie_chart = alt.Chart(VitimasCondicaoVia).mark_arc().encode(
-    theta=alt.Theta(field="Número de vítimas", type="quantitative"),
+    theta=alt.Theta(field="Vítimas Fatais", type="quantitative"),
     color=alt.Color(field="Condição da via", type="nominal"),
 ).properties(   # propriedades do gráfico
-    title='Vítimas x Condição da Via' # adiciona o titulo no gráfico
+    title='Vítimas Fatais x Condição da Via' # adiciona o titulo no gráfico
 ).configure_title(  # formata o titulo
     fontSize = 20,  # tamanho da fonte
     anchor= 'middle',   # centraliza o titulo
