@@ -1,6 +1,7 @@
 import pandas as pd
 import streamlit as st
 import altair as alt
+from vega_datasets import data
 
 st.set_page_config(page_title="Acidentes Recife", # Configuração do setpage, ou seja, informações da página.
     page_icon=":warning:",
@@ -51,15 +52,41 @@ df_selection = df.query( # Aqui eu vou atribuir a variável que eu criei nos sid
 st.dataframe(df_selection) # Abertura do Dataset
 
 # Alteração dos nomes das colunas
-df_selection.rename(columns={'vitimasfatais':'Vítimas Fatais'}, inplace=True)
-df_selection.rename(columns={'acidente_verificado':'Localização na via'}, inplace=True)
-df_selection.rename(columns={'condicao_via':'Condição da via'}, inplace=True)
-df_selection.rename(columns={'vitimas':'Número de vítimas'}, inplace=True)
 df_selection.rename(columns={'bairro':'Bairro'}, inplace=True)
 df_selection.rename(columns={'tempo_clima':'Clima'}, inplace=True)
 
-Total_acidentes = df_selection.groupby(['Ano']).sum()
+
+Total_acidentes = df_selection.groupby(['Ano']).size
 Total_acidentes = Total_acidentes.reset_index()
+#Gráfico Stacked Bar Chart with Text Overlay (https://altair-viz.github.io/gallery/stacked_bar_chart_with_text.html)
+source=data.barley()
 
-st.write(df.groupby(['tempo_clima']).sum())
+bars = alt.Chart(source).mark_bar().encode(
+    x=alt.X('sum(yield):Q', stack='zero'),
+    y=alt.Y('variety:N'),
+    color=alt.Color('site')
+)
 
+text = alt.Chart(source).mark_text(dx=-15, dy=3, color='white').encode(
+    x=alt.X('sum(yield):Q', stack='zero'),
+    y=alt.Y('variety:N'),
+    detail='site:N',
+    text=alt.Text('sum(yield):Q', format='.1f')
+)
+
+bars + text
+# Fim do gráfico de barras estacadas
+
+
+# Gráfico das Bolinhas (https://altair-viz.github.io/gallery/interactive_scatter_plot.html)
+import altair as alt
+from vega_datasets import data
+
+source = data.cars()
+
+alt.Chart(source).mark_circle().encode(
+    x='Horsepower',
+    y='Miles_per_Gallon',
+    color='Origin',
+).interactive()
+#Termina o Gráfico de bolinhas

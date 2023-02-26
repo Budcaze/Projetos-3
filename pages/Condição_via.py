@@ -1,0 +1,1 @@
+#Aqui vai ser a condição da via pegando o geral
