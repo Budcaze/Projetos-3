@@ -1,7 +1,6 @@
 import pandas as pd
 import streamlit as st
 import altair as alt
-from vega_datasets import data
 
 st.set_page_config(page_title="Acidentes Recife", # Configuração do setpage, ou seja, informações da página.
     page_icon=":warning:",
@@ -56,37 +55,41 @@ df_selection.rename(columns={'bairro':'Bairro'}, inplace=True)
 df_selection.rename(columns={'tempo_clima':'Clima'}, inplace=True)
 
 
-Total_acidentes = df_selection.groupby(['Ano']).size
-Total_acidentes = Total_acidentes.reset_index()
-#Gráfico Stacked Bar Chart with Text Overlay (https://altair-viz.github.io/gallery/stacked_bar_chart_with_text.html)
-source=data.barley()
+#Gráfico Ano x Clima x Registros
 
-bars = alt.Chart(source).mark_bar().encode(
-    x=alt.X('sum(yield):Q', stack='zero'),
-    y=alt.Y('variety:N'),
-    color=alt.Color('site')
+climaAno = df_selection.groupby(['Ano','Clima'], as_index=False)['Clima'].size()
+
+bars = alt.Chart(climaAno).mark_bar().encode(
+    x=alt.X('sum(size):Q', stack='zero', title='Quantidade de Ocorrências'),
+    y=alt.Y('Ano'),
+    color=alt.Color('Clima')
+).properties(   # propriedades do gráfico
+    title='Clima x Ocorrências', # adiciona o titulo no gráfico
+    width= 1000,
+    height=400
+)
+text = alt.Chart(climaAno).mark_text(dx=-15, dy=3, color='white').encode(
+    x=alt.X('sum(size):Q', title='Quantidade de Ocorrências', stack='zero'),
+    y=alt.Y('Ano:N'),
+    detail='Clima:N',
+    text=alt.Text('sum(size):Q', title='Quantidade de Ocorrências')
 )
 
-text = alt.Chart(source).mark_text(dx=-15, dy=3, color='white').encode(
-    x=alt.X('sum(yield):Q', stack='zero'),
-    y=alt.Y('variety:N'),
-    detail='site:N',
-    text=alt.Text('sum(yield):Q', format='.1f')
-)
-
-bars + text
+st.altair_chart(bars + text, use_container_width=True)
 # Fim do gráfico de barras estacadas
 
 
-# Gráfico das Bolinhas (https://altair-viz.github.io/gallery/interactive_scatter_plot.html)
-import altair as alt
-from vega_datasets import data
+# Gráfico Clima x Bairro
 
-source = data.cars()
+#
 
-alt.Chart(source).mark_circle().encode(
-    x='Horsepower',
-    y='Miles_per_Gallon',
-    color='Origin',
+climaBairro = df_selection.groupby(['Bairro','Clima'], as_index=False)['Clima'].size()
+st.dataframe(climaBairro)
+
+bars = alt.Chart(climaBairro).mark_circle().encode(
+   x='size:Q',
+    y='bairro:N',
+    color='Clima',
 ).interactive()
 #Termina o Gráfico de bolinhas
+st.altair_chart(bars, use_container_width=True)
