@@ -93,3 +93,34 @@ bars = alt.Chart(climaBairro).mark_circle().encode(
 ).interactive()
 #Termina o Gráfico de bolinhas
 st.altair_chart(bars, use_container_width=True)
+
+# Acidentes x Clima
+VitimasTempoAno = df_selection.groupby('Clima')['vitimasfatais'].sum()
+VitimasTempoAno = VitimasTempoAno.reset_index() # transforma o index em uma coluna
+
+pie_chart = alt.Chart(VitimasTempoAno).mark_arc(innerRadius=50).encode(
+    theta=alt.Theta(field="vitimasfatais", type="quantitative"),
+    color=alt.Color(field="Clima", type="nominal"),
+).properties(   # propriedades do gráfico
+    title='Quantidade de Vitimas Fatais x Clima' # adiciona o titulo no gráfico
+).configure_title(  # formata o titulo
+    fontSize = 20,
+    anchor= 'middle',   # centraliza o titulo
+    color= 'black'
+) 
+st.altair_chart(pie_chart, use_container_width=True)
+
+CasosCondicaoVia = df_selection.groupby('condicao_via')['Clima'].size()
+CasosCondicaoVia= CasosCondicaoVia.reset_index() # transforma o index em uma coluna
+
+donut_chart = alt.Chart(CasosCondicaoVia).mark_arc(innerRadius=50).encode(
+    theta=alt.Theta(field="Clima", type="quantitative"),
+    color=alt.Color(field="condicao_via", type="nominal"),
+).properties(   # propriedades do gráfico
+    title='Quantidade de Condição da via x Clima' # adiciona o titulo no gráfico
+).configure_title(  # formata o titulo
+    fontSize = 20,
+    anchor= 'middle',   # centraliza o titulo
+    color= 'black'
+) 
+st.altair_chart(donut_chart, use_container_width=True)
