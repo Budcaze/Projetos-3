@@ -33,8 +33,8 @@ ano = st.sidebar.multiselect(
 st.sidebar.header("Filtre aqui por bairro :")
 bairro = st.sidebar.multiselect(
     "Selecione o bairro: ",
-    options=df["bairro"].unique(),
-    default=df["bairro"].unique()
+    options=df["bairro"].unique()
+    
 )
 st.sidebar.header("Filtre aqui por clima:")
 clima = st.sidebar.multiselect(
@@ -95,14 +95,15 @@ bars = alt.Chart(climaBairro).mark_circle().encode(
 st.altair_chart(bars, use_container_width=True)
 
 # Acidentes x Clima
-VitimasTempoAno = df_selection.groupby('Clima')['vitimasfatais'].sum()
-VitimasTempoAno = VitimasTempoAno.reset_index() # transforma o index em uma coluna
+QuantCasosClima =  df_selection.groupby(['Clima'], as_index=False)['Clima'].size()
+st.dataframe(QuantCasosClima)
+QuantCasosClima = QuantCasosClima.reset_index() # transforma o index em uma coluna
 
-pie_chart = alt.Chart(VitimasTempoAno).mark_arc(innerRadius=50).encode(
-    theta=alt.Theta(field="vitimasfatais", type="quantitative"),
+pie_chart = alt.Chart(QuantCasosClima).mark_arc(innerRadius=50).encode(
+    theta=alt.Theta(field="size", type="quantitative", title="Quantidade de Casos"),
     color=alt.Color(field="Clima", type="nominal"),
 ).properties(   # propriedades do gráfico
-    title='Quantidade de Vitimas Fatais x Clima' # adiciona o titulo no gráfico
+    title='Quantidade Casos x Clima' # adiciona o titulo no gráfico
 ).configure_title(  # formata o titulo
     fontSize = 20,
     anchor= 'middle',   # centraliza o titulo

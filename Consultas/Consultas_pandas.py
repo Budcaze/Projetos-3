@@ -27,4 +27,5 @@ df.rename(columns={'tempo_clima':'Clima'}, inplace=True)
 # print(df.groupby(['Ano', 'Clima']).count().sort_values(by='Ano'))
 # print(df.groupby(['Clima']).sum(numeric_only=False))
 # print(df.columns)
-print(df.groupby(['Ano']).size())
+
+
