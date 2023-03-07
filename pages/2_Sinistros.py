@@ -42,7 +42,7 @@ bairro = st.sidebar.multiselect(
 df_selection = df.query( # Aqui eu vou atribuir a variável que eu criei nos sidebars as colunas do dataset
     "Ano == @ano & bairro == @bairro" #O @ significa que estou chamando a variável que criei lá no sidebar
 )
-st.dataframe(df_selection) # Abertura do Dataset
+# st.dataframe(df_selection) # Abertura do Dataset
 
 # Alteração dos nomes das colunas
 df_selection.rename(columns={'vitimasfatais':'Vítimas Fatais'}, inplace=True)
@@ -57,7 +57,7 @@ df_selection.rename(columns={'tempo_clima':'Clima'}, inplace=True)
 VitimasFatais = df_selection.groupby(['Ano'])['Vítimas Fatais'].sum()
 VitimasFatais = VitimasFatais.reset_index()
 
-st.write(df.groupby(['Ano']).sum()[['vitimasfatais']].sort_values(by='Ano'))
+# st.write(df.groupby(['Ano']).sum()[['vitimasfatais']].sort_values(by='Ano'))
 
 bar_chart = alt.Chart(VitimasFatais).mark_bar(color='red').encode(      # color= '', define a cor do gráfico
     x= 'Ano',

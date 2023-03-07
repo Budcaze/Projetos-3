@@ -41,7 +41,7 @@ bairro = st.sidebar.multiselect(
 df_selection = df.query( #Aqui eu vou atribuir a varivavel que eu criei nos sidebars as colunas do dataset
     "Ano == @ano & bairro == @bairro" #O @ significa que estou chamando a varivel que criei lá no sidebar
 )
-st.dataframe(df_selection) #Aqui eu chamo nosso dataset para ele aparecer
+# st.dataframe(df_selection) #Aqui eu chamo nosso dataset para ele aparecer
 
 
 
@@ -76,7 +76,7 @@ st.altair_chart(bar_chart, use_container_width=True)
 #Valores totais de acidentes por ano (quantidade de vezes que cada ano aparece no dataset)
 
 lista = df.groupby('Ano')['Ano'].transform('count')
-st.write(lista) #teste visual comrpovando número de vezes que x Ano está rpesente
+# st.write(lista) #teste visual comrpovando número de vezes que x Ano está rpesente
 ano2015 = lista.loc[0] #linha 0 (inicial que é 2015) nessa 'lista' feita com o groupby
 indiceDeComeco = ano2015 #indiceDeComeco seta em que linha começará o próximo ano
 ano2016 = lista.loc[indiceDeComeco] #linha buscada de acordo com fim da contagem dos anos anteriores
@@ -91,8 +91,8 @@ ano2020 = lista.loc[indiceDeComeco]
 indiceDeComeco += ano2020
 ano2021 = lista.loc[indiceDeComeco]
 
-st.write('Ano 2015: ', ano2015, 'Ano 2016: ', ano2016, 'Ano 2017: ', ano2017, 'Ano 2018: ', 
-ano2018, 'Ano 2019: ', ano2019, 'Ano 2020: ', ano2020, 'Ano 2021: ', ano2021) #demonstração valores encontrados
+# st.write('Ano 2015: ', ano2015, 'Ano 2016: ', ano2016, 'Ano 2017: ', ano2017, 'Ano 2018: ', 
+# ano2018, 'Ano 2019: ', ano2019, 'Ano 2020: ', ano2020, 'Ano 2021: ', ano2021) #demonstração valores encontrados
 
 #AcidentesTotais = df_selection.groupby('Ano')[df['Freq'][1]]
 #AcidentesTotais = AcidentesTotais.reset_index()

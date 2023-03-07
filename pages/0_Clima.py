@@ -48,11 +48,12 @@ clima = st.sidebar.multiselect(
 df_selection = df.query( # Aqui eu vou atribuir a variável que eu criei nos sidebars as colunas do dataset
     "Ano == @ano & bairro == @bairro & tempo_clima == @clima" #O @ significa que estou chamando a variável que criei lá no sidebar
 )
-st.dataframe(df_selection) # Abertura do Dataset
+# st.dataframe(df_selection) # Abertura do Dataset
 
 # Alteração dos nomes das colunas
 df_selection.rename(columns={'bairro':'Bairro'}, inplace=True)
 df_selection.rename(columns={'tempo_clima':'Clima'}, inplace=True)
+df_selection.rename(columns={'condicao_via':'Condição da via'}, inplace=True)
 
 
 #Gráfico Ano x Clima x Registros
@@ -84,7 +85,7 @@ st.altair_chart(bars + text, use_container_width=True)
 #
 
 climaBairro = df_selection.groupby(['Bairro','Clima'], as_index=False)['Clima'].size()
-st.dataframe(climaBairro)
+# st.dataframe(climaBairro)
 
 bars = alt.Chart(climaBairro).mark_circle().encode(
    x='size:Q',
@@ -92,11 +93,11 @@ bars = alt.Chart(climaBairro).mark_circle().encode(
     color='Clima',
 ).interactive()
 #Termina o Gráfico de bolinhas
-st.altair_chart(bars, use_container_width=True)
+# st.altair_chart(bars, use_container_width=True)
 
 # Acidentes x Clima
 QuantCasosClima =  df_selection.groupby(['Clima'], as_index=False)['Clima'].size()
-st.dataframe(QuantCasosClima)
+# st.dataframe(QuantCasosClima)
 QuantCasosClima = QuantCasosClima.reset_index() # transforma o index em uma coluna
 
 pie_chart = alt.Chart(QuantCasosClima).mark_arc(innerRadius=50).encode(
@@ -111,12 +112,12 @@ pie_chart = alt.Chart(QuantCasosClima).mark_arc(innerRadius=50).encode(
 ) 
 st.altair_chart(pie_chart, use_container_width=True)
 
-CasosCondicaoVia = df_selection.groupby('condicao_via')['Clima'].size()
+CasosCondicaoVia = df_selection.groupby('Condição da via')['Clima'].size()
 CasosCondicaoVia= CasosCondicaoVia.reset_index() # transforma o index em uma coluna
 
 donut_chart = alt.Chart(CasosCondicaoVia).mark_arc(innerRadius=50).encode(
     theta=alt.Theta(field="Clima", type="quantitative"),
-    color=alt.Color(field="condicao_via", type="nominal"),
+    color=alt.Color(field="Condição da via", type="nominal"),
 ).properties(   # propriedades do gráfico
     title='Quantidade de Condição da via x Clima' # adiciona o titulo no gráfico
 ).configure_title(  # formata o titulo
