@@ -76,7 +76,13 @@ text = alt.Chart(climaAno).mark_text(dx=-15, dy=3, color='white').encode(
     text=alt.Text('sum(size):Q', title='Quantidade de Ocorrências')
 )
 
-st.altair_chart(bars + text, use_container_width=True)
+chart = alt.layer(bars).configure_title(
+    fontSize = 20,
+    anchor= 'middle',
+    color= 'black'
+)
+
+st.altair_chart(chart + text, use_container_width=True)
 # Fim do gráfico de barras estacadas
 
 

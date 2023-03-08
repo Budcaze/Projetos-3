@@ -74,8 +74,13 @@ text = alt.Chart(tipoAcAno).mark_text(dx=-15, dy=3, color='white').encode(
     detail='Tipo do Acidente:N',
     text=alt.Text('sum(size):Q', title='Quantidade de Ocorrências')
 )
+chart = alt.layer(bars).configure_title(    # edita o titulo
+    fontSize = 20,
+    anchor= 'middle',
+    color= 'black'
+)
 
-st.altair_chart(bars + text, use_container_width=True)
+st.altair_chart(chart + text, use_container_width=True)
 # Fim do gráfico de barras estacadas
 
 
@@ -116,7 +121,7 @@ CasosCondicaoVia= CasosCondicaoVia.reset_index() # transforma o index em uma col
 
 donut_chart = alt.Chart(CasosCondicaoVia).mark_arc(innerRadius=50).encode(
     theta=alt.Theta(field="Tipo do Acidente", type="quantitative"),
-    color=alt.Color(field="condicao_via", type="nominal"),
+    color=alt.Color(field="condicao_via", type="nominal", title='Condição da via'),
 ).properties(   # propriedades do gráfico
     title='Quantidade de Condição da via x Tipo do Acidente' # adiciona o titulo no gráfico
 ).configure_title(  # formata o titulo

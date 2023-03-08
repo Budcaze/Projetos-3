@@ -48,7 +48,7 @@ cond_via = st.sidebar.multiselect(
 df_selection = df.query( # Aqui eu vou atribuir a variável que eu criei nos sidebars as colunas do dataset
     "Ano == @ano & bairro == @bairro & condicao_via == @cond_via" #O @ significa que estou chamando a variável que criei lá no sidebar
 )
-st.dataframe(df_selection) # Abertura do Dataset
+#st.dataframe(df_selection) # Abertura do Dataset
 
 # Alteração dos nomes das colunas
 df_selection.rename(columns={'bairro':'Bairro'}, inplace=True)
@@ -62,12 +62,19 @@ condicao_via_Ano = df_selection.groupby(['Ano','condicao_via'], as_index=False)[
 bars = alt.Chart(condicao_via_Ano).mark_bar().encode(
     x=alt.X('sum(size):Q', stack='zero', title='Quantidade de Ocorrências'),
     y=alt.Y('Ano'),
-    color=alt.Color('condicao_via')
+    color=alt.Color('condicao_via', title='Condição da via')
 ).properties(   # propriedades do gráfico
-    title='Condicao_via x Ocorrências', # adiciona o titulo no gráfico
+    title='Condição via x Ocorrências', # adiciona o titulo no gráfico
     width= 1000,
     height=400
 )
+
+chart1 = alt.layer(bars).configure_title(    # edita o titulo
+    fontSize = 20,
+    anchor= 'middle',
+    color= 'black'
+)
+
 text = alt.Chart(condicao_via_Ano).mark_text(dx=-15, dy=3, color='white').encode(
     x=alt.X('sum(size):Q', title='Quantidade de Ocorrências', stack='zero'),
     y=alt.Y('Ano:N'),
@@ -75,7 +82,7 @@ text = alt.Chart(condicao_via_Ano).mark_text(dx=-15, dy=3, color='white').encode
     text=alt.Text('sum(size):Q', title='Quantidade de Ocorrências')
 )
 
-st.altair_chart(bars + text, use_container_width=True)
+st.altair_chart(chart1 + text, use_container_width=True)
 # Fim do gráfico de barras estacadas
 
 
