@@ -57,37 +57,54 @@ df_selection.rename(columns={'tipo':'Tipo do Acidente'}, inplace=True)
 
 #Gráfico Ano x Tipo do Acidente x Registros
 
+#bars = alt.Chart(tipoAcAno).mark_bar().encode(
+#    x=alt.X('sum(size):Q', stack='zero', title='Quantidade de Ocorrências'),
+#    y=alt.Y('Ano'),
+#    color=alt.Color('Tipo do Acidente')
+#).properties(   # propriedades do gráfico
+#    title='Tipo do Acidente x Ocorrências', # adiciona o titulo no gráfico
+#    width= 1000,
+#    height=400
+#)
+#text = alt.Chart(tipoAcAno).mark_text(dx=-15, dy=3, color='white').encode(
+#    x=alt.X('sum(size):Q', title='Quantidade de Ocorrências', stack='zero'),
+#    y=alt.Y('Ano:N'),
+#    detail='Tipo do Acidente:N',
+#    text=alt.Text('sum(size):Q', title='Quantidade de Ocorrências')
+#)
+#chart = alt.layer(bars).configure_title(    # edita o titulo
+#    fontSize = 20,
+#    anchor= 'middle',
+#    color= 'black'
+#)
+
+#st.altair_chart(chart + text, use_container_width=True)
+# Fim do gráfico de barras estacadas
+
+# Gráfico Tipo do Acidente x Ocorrências
+
 tipoAcAno = df_selection.groupby(['Ano','Tipo do Acidente'], as_index=False)['Tipo do Acidente'].size()
 
-bars = alt.Chart(tipoAcAno).mark_bar().encode(
-    x=alt.X('sum(size):Q', stack='zero', title='Quantidade de Ocorrências'),
-    y=alt.Y('Ano'),
-    color=alt.Color('Tipo do Acidente')
-).properties(   # propriedades do gráfico
-    title='Tipo do Acidente x Ocorrências', # adiciona o titulo no gráfico
-    width= 1000,
-    height=400
-)
-text = alt.Chart(tipoAcAno).mark_text(dx=-15, dy=3, color='white').encode(
-    x=alt.X('sum(size):Q', title='Quantidade de Ocorrências', stack='zero'),
-    y=alt.Y('Ano:N'),
-    detail='Tipo do Acidente:N',
-    text=alt.Text('sum(size):Q', title='Quantidade de Ocorrências')
-)
-chart = alt.layer(bars).configure_title(    # edita o titulo
-    fontSize = 20,
-    anchor= 'middle',
-    color= 'black'
-)
+streamgraph = alt.Chart(tipoAcAno).mark_area().encode(
+    alt.X('Ano', axis=alt.Axis(labelAngle=0, domain=False, tickSize=0)),
+    alt.Y('sum(size):Q',  axis=None, title='Quantidade de Ocorrências'),
+    alt.Color('Tipo do Acidente',
+        scale=alt.Scale(scheme='category20b')
+    )
+).interactive(
 
-st.altair_chart(chart + text, use_container_width=True)
-# Fim do gráfico de barras estacadas
+).properties(   # propriedades do gráfico
+  title='Tipo do Acidente x Ocorrências', # adiciona o titulo no gráfico
+    width= 900,
+    height=400
+).configure_legend(labelLimit=0)    #exibir o texto da legenda por completo
+
+st.altair_chart(streamgraph)
 
 
 # Gráfico Tipo do Acidente x Bairro
 
 #
-
 tipoAcBairro = df_selection.groupby(['Bairro','Tipo do Acidente'], as_index=False)['Tipo do Acidente'].size()
 #st.dataframe(tipoAcBairro)
 
@@ -98,6 +115,8 @@ bars = alt.Chart(tipoAcBairro).mark_circle().encode(
 ).interactive()
 #Termina o Gráfico de bolinhas
 #st.altair_chart(bars, use_container_width=True)
+
+
 
 # Acidentes x Tipo do Acidente
 QuantCasosTipoAc =  df_selection.groupby(['Tipo do Acidente'], as_index=False)['Tipo do Acidente'].size()
@@ -113,8 +132,10 @@ pie_chart = alt.Chart(QuantCasosTipoAc).mark_arc(innerRadius=50).encode(
     fontSize = 20,
     anchor= 'middle',   # centraliza o titulo
     color= 'black'
-) 
+).configure_legend(labelLimit=0)
 st.altair_chart(pie_chart, use_container_width=True)
+
+
 
 CasosCondicaoVia = df_selection.groupby('condicao_via')['Tipo do Acidente'].size()
 CasosCondicaoVia= CasosCondicaoVia.reset_index() # transforma o index em uma coluna
