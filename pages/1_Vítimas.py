@@ -58,6 +58,17 @@ df_selection.rename(columns={'tempo_clima':'Clima'}, inplace=True) # altera o no
 VitimasTotais = df_selection.groupby(['Ano'])['Número de vítimas'].sum()
 VitimasTotais = VitimasTotais.reset_index()
 
+left_column, middle_column, right_column = st.columns(3)
+with left_column:
+    st.subheader("Bairro com mais vitimas: ")
+    st.subheader("Boa Viagem")
+with middle_column:
+    st.subheader("Total de Vitimas: ")
+    st.subheader("Soma do total dos anos")
+with right_column:
+    st.subheader("Clima mais aparente: ")
+    st.subheader("Um CLIMA AI") 
+st.markdown("---------")
 
 bar_chart = alt.Chart(VitimasTotais).mark_bar(color='#00BFFF').encode(      # color= '', define a cor do gráfico
     x= 'Ano',

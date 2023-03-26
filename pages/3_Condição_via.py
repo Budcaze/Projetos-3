@@ -10,7 +10,17 @@ df = pd.read_parquet("data/DataSetAcidentesRecife.parquet") # Abertura do DataSe
 
 st.title("Acidentes por Condição da via")
 
-
+left_column, middle_column, right_column = st.columns(3)
+with left_column:
+    st.subheader("Bairro com mais vitimas: ")
+    st.subheader("Boa Viagem")
+with middle_column:
+    st.subheader("Total de Vitimas: ")
+    st.subheader("Soma do total dos anos")
+with right_column:
+    st.subheader("Clima mais aparente: ")
+    st.subheader("Um CLIMA AI") 
+st.markdown("---------")
 
 # Converte o tipo das colunas para inteiro
 df['vitimas'] = df['vitimas'].fillna(0) # substitui o vazio por 0
