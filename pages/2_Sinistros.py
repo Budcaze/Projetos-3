@@ -59,6 +59,23 @@ VitimasFatais = VitimasFatais.reset_index()
 
 # st.write(df.groupby(['Ano']).sum()[['vitimasfatais']].sort_values(by='Ano'))
 
+st.title("Resumo")
+st.markdown("##")
+total_sinistros = df_selection["Vítimas Fatais"].sum()
+media_sinistros= round(df_selection["Vítimas Fatais"].mean(), 1)
+
+left_column, middle_column, right_column = st.columns(3)
+with left_column:
+    st.subheader("Total de Sinistros:")
+    st.subheader(f"{total_sinistros}")
+with middle_column:
+    st.subheader("Média de Sinistros:")
+    st.subheader(f"{media_sinistros}")
+with right_column:
+    st.subheader("Bairro com Maior Números de Sinistros:")
+    st.subheader("Boa Viagem")
+
+
 bar_chart = alt.Chart(VitimasFatais).mark_bar(color='red').encode(      # color= '', define a cor do gráfico
     x= 'Ano',
     y= 'Vítimas Fatais'
@@ -106,7 +123,6 @@ pie_chart = alt.Chart(VitimasCondicaoVia).mark_arc().encode(
     color= 'black'  # cor do titulo
 )  
 st.altair_chart(pie_chart, use_container_width=True)
-
 
 
 VitimasBairro = df_selection.groupby('Bairro')['Vítimas Fatais'].sum()
