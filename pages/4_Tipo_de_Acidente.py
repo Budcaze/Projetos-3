@@ -97,7 +97,7 @@ tipoAcAno = df_selection.groupby(['Ano','Tipo do Acidente'], as_index=False)['Ti
 
 streamgraph = alt.Chart(tipoAcAno).mark_area().encode(
     alt.X('Ano', axis=alt.Axis(labelAngle=0, domain=False, tickSize=0)),
-    alt.Y('sum(size):Q',  axis=None, title='Quantidade de Ocorrências'),
+    alt.Y('sum(size):Q',  axis=None, stack='normalize', title='Quantidade de Ocorrências'),
     alt.Color('Tipo do Acidente',
         scale=alt.Scale(scheme='category20b')
     )

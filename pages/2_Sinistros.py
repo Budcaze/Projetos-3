@@ -73,7 +73,7 @@ with middle_column:
     st.subheader(f"{media_sinistros}")
 with right_column:
     st.subheader("Bairro com Maior Números de Sinistros:")
-    st.subheader("Boa Viagem")
+    st.subheader("Fabio")
 
 
 bar_chart = alt.Chart(VitimasFatais).mark_bar(color='red').encode(      # color= '', define a cor do gráfico
@@ -109,20 +109,25 @@ st.altair_chart(pie_chart, use_container_width=True)
 
 
 # Vítimas x Condição da Via (Interativo)
-VitimasCondicaoVia = df_selection.groupby('Condição da via')['Vítimas Fatais'].sum()
+VitimasCondicaoVia = df_selection.groupby(['Ano'])['Condição da via'].sum()
 VitimasCondicaoVia = VitimasCondicaoVia.reset_index() # transforma o index em uma coluna
 
-pie_chart = alt.Chart(VitimasCondicaoVia).mark_arc().encode(
-    theta=alt.Theta(field="Vítimas Fatais", type="quantitative"),
-    color=alt.Color(field="Condição da via", type="nominal"),
-).properties(   # propriedades do gráfico
-    title='Vítimas Fatais x Condição da Via' # adiciona o titulo no gráfico
-).configure_title(  # formata o titulo
-    fontSize = 20,  # tamanho da fonte
-    anchor= 'middle',   # centraliza o titulo
-    color= 'black'  # cor do titulo
-)  
-st.altair_chart(pie_chart, use_container_width=True)
+robson = alt.Chart(VitimasCondicaoVia).mark_area(
+    line={'color':'darkgreen'},
+    color=alt.Gradient(
+        gradient='linear',
+        stops=[alt.GradientStop(color='white', offset=0),
+               alt.GradientStop(color='darkgreen', offset=1)],
+        x1=1,
+        x2=1,
+        y1=1,
+        y2=0
+    )
+).encode(
+    alt.X('Ano:N'),
+    alt.Y('Condição da via:Q')
+)
+st.altair_chart(robson, use_container_width=True)
 
 
 VitimasBairro = df_selection.groupby('Bairro')['Vítimas Fatais'].sum()
