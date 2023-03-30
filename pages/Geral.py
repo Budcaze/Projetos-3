@@ -7,7 +7,7 @@ st.set_page_config(page_title="Acidentes Recife", # Configuração do setpage, o
     layout="wide")
 df = pd.read_parquet("data/DataSetAcidentesRecife.parquet") # Abertura do DataSet.
 
-st.title("Vítimas")
+st.title("Geral")
 
 # Converte o tipo das colunas para inteiro
 df['vitimas'] = df['vitimas'].fillna(0) # substitui o vazio por 0
@@ -154,7 +154,7 @@ tipoAcAno = df_selection.groupby(['Ano','tipo'], as_index=False)['tipo'].size()
 
 streamgraph = alt.Chart(tipoAcAno).mark_area().encode(
     alt.X('Ano', axis=alt.Axis(labelAngle=0, domain=False, tickSize=0)),
-    alt.Y('sum(size):Q',  axis=None, title='Quantidade de Ocorrências'),
+    alt.Y('sum(size):Q', axis=None, title='Quantidade de Ocorrências'),
     alt.Color('tipo',
         scale=alt.Scale(scheme='category20b')
     )
@@ -168,41 +168,38 @@ streamgraph = alt.Chart(tipoAcAno).mark_area().encode(
 
 st.altair_chart(streamgraph, use_container_width=True)
 
-### Relação entre a velocidade máxima permitida na via e a quantidade de acidentes com vítimas ###
 
-velocidadeAcidentes = df_selection[['velocidade_max_via','Número de vítimas']]
-
-bubble = alt.Chart(velocidadeAcidentes).mark_point().encode(
-    x=alt.X('velocidade_max_via', title ="Velocidade Máxima da Via"),
-    y=alt.Y('sum(Número de vítimas)', title="Quantidade de Vítimas"),
+### Vitimas x velocidade maxima x Condição da via###
+vitimasVelVia = df_selection[['Número de vítimas', 'Condição da via', 'velocidade_max_via']]
+vitimasVelVia = vitimasVelVia.dropna()    #remove os nulos
+scatter1 = alt.Chart(vitimasVelVia).mark_circle(size=60).encode(
+    x=alt.X('velocidade_max_via', title='Velocidade Máxima da Via',axis=alt.Axis(labelAngle=0, domain=False, tickSize=0)),
+    y=alt.Y('Número de vítimas'),
+    color='Condição da via',
     size='Número de vítimas'
-).properties(
-    title='Relação entre a velocidade máxima da via e a quantidade de acidentes com vítimas'
-).configure_title(  # formata o titulo
-    fontSize = 20,
-    anchor= 'middle',   # centraliza o titulo
-    color= 'black'
-) 
-
-st.altair_chart(bubble, use_container_width=True)
-
-# Número de Vítimas x Quantidade de acidentes no ano
-
-vitimasPorAcid = df_selection[['Ano', 'Número de vítimas']]
-scatter = alt.Chart(vitimasPorAcid).mark_circle(size=60).encode(
-    x=alt.X('count(Ano)', title='Quantidade de Ocorrências'),
-    y='Número de vítimas',
-    color='Ano',
-    #tooltip=['Ano', 'sum(Ano)','Números de vítimas']
 ).interactive().properties(
-    title='Número de Vítimas x Quantidade de Ocorrências no ano'
+    title='Relação entre a Condição, Velocidade máxima da via e a quantidade de acidentes com vítimas'
 ).configure_title(  # formata o titulo
     fontSize = 20,
     anchor= 'middle',   # centraliza o titulo
     color= 'black'
-) 
+).configure_legend(labelLimit=0)    #exibir o texto da legenda por completo
+st.altair_chart(scatter1, use_container_width=True)
 
-st.altair_chart(scatter, use_container_width=True)
+###  ###
+velFatal = df_selection[['Vítimas Fatais', 'velocidade_max_via']]
+heat = alt.Chart(velFatal).mark_rect().encode(
+    alt.X('Vítimas Fatais:Q', title='Vítimas Fatais', bin=alt.Bin(maxbins=60)),
+    alt.Y('velocidade_max_via:Q', title='Velocidade Máxima da Via', bin=alt.Bin(maxbins=40)),
+    alt.Color('count():Q', scale=alt.Scale(scheme='greenblue'))
+).interactive().properties(
+    title='Vítimas Fatais x Velocidade Máxima da Via'
+).configure_title(  # formata o titulo
+    fontSize = 20,
+    anchor= 'middle',   # centraliza o titulo
+    color= 'black'
+)
+st.altair_chart(heat, use_container_width=True)
 
 #Valores totais de acidentes por ano (quantidade de vezes que cada ano aparece no dataset)
 
