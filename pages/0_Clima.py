@@ -91,13 +91,31 @@ st.altair_chart(chart + text, use_container_width=True)
 #
 
 climaBairro = df_selection.groupby(['Bairro','Clima'], as_index=False)['Clima'].size()
-# st.dataframe(climaBairro)
+#st.dataframe(climaBairro)
 
-bars = alt.Chart(climaBairro).mark_circle().encode(
-   x='size:Q',
-    y='bairro:N',
-    color='Clima',
-).interactive()
+bars = alt.Chart(climaBairro).mark_bar().encode(
+    x=alt.X('sum(size):Q', stack='zero', title='Quantidade de Ocorrências'),
+    y=alt.Y('Bairro'),
+    color=alt.Color('Clima')
+).properties(   # propriedades do gráfico
+    title='Clima x Bairro', # adiciona o titulo no gráfico
+    width= 1000,
+    height=400
+)
+text = alt.Chart(climaBairro).mark_text(dx=-15, dy=3, color='white').encode(
+    x=alt.X('sum(size):Q', title='Quantidade de Ocorrências', stack='zero'),
+    y=alt.Y('Bairro:N'),
+    detail='Clima:N',
+    text=alt.Text('sum(size):Q', title='Quantidade de Ocorrências')
+)
+
+chart = alt.layer(bars).configure_title(
+    fontSize = 20,
+    anchor= 'middle',
+    color= 'black'
+)
+
+#st.altair_chart(chart + text, use_container_width=True)
 #Termina o Gráfico de bolinhas
 # st.altair_chart(bars, use_container_width=True)
 
@@ -131,4 +149,4 @@ donut_chart = alt.Chart(CasosCondicaoVia).mark_arc(innerRadius=50).encode(
     anchor= 'middle',   # centraliza o titulo
     color= 'black'
 ) 
-st.altair_chart(donut_chart, use_container_width=True)
+#st.altair_chart(donut_chart, use_container_width=True)
