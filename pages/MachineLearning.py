@@ -1,54 +1,19 @@
 import pandas as pd
 import streamlit as st
 import altair as alt
+import numpy as np
+import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import r2_score, mean_absolute_error
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import classification_report
+from sklearn.preprocessing import OneHotEncoder
+
+
 
 # Carregando os dados
-df = pd.read_parquet("data/DataSetAcidentesRecife.parquet")
-
-df['Ano'] = df['Ano'].fillna(0)
-df['auto'] = df['auto'].fillna(0)
-df['moto'] = df['moto'].fillna(0)
-df['ciclom'] = df['ciclom'].fillna(0)
-df['ciclista'] = df['ciclista'].fillna(0)
-df['onibus'] = df['onibus'].fillna(0)
-df['caminhao'] = df['caminhao'].fillna(0)
-df['viatura'] = df['viatura'].fillna(0)
-df['outros'] = df['outros'].fillna(0)
-df['vitimas'] = df['vitimas'].fillna(0)
-df['vitimasfatais'] = df['vitimasfatais'].fillna(0)
-df['velocidade_max_via'] = df['velocidade_max_via'].fillna(0)
-#Remover o Km/h da coluna velocidade_max_via
-df['velocidade_max_via'].replace({' km/h':''},regex=True,inplace=True)
-df['velocidade_max_via'].replace({'KM/H':''},regex=True,inplace=True)
-df['velocidade_max_via'].replace({'km':''},regex=True,inplace=True)
-df['velocidade_max_via'].replace({'KM':''},regex=True,inplace=True)
-df['velocidade_max_via'].replace({'N/I':''},regex=True,inplace=True)
-df['velocidade_max_via'].replace({'n/i':''},regex=True,inplace=True)
-df['velocidade_max_via'].replace({'/h':''},regex=True,inplace=True)
-df['velocidade_max_via'].replace({'30 e 40':'35'},regex=True,inplace=True)
-df['velocidade_max_via'].replace({'':'0'},regex=True,inplace=True)
-
-
-# Dividindo os dados em treinamento e teste
-newDF = df[['Ano', 'auto', 'moto', 'ciclom', 'ciclista', 'onibus', 'caminhao', 'viatura', 'outros', 'vitimas', 'vitimasfatais', 'velocidade_max_via']]
-X = newDF.drop(['vitimas'], axis=1)
-y = df['vitimas']
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
-
-# Criando um modelo de regressão linear com Scikit-Learn
-reg = LinearRegression()
-reg.fit(X_train, y_train)
-
-# Avaliando o desempenho do modelo com métricas de regressão
-y_pred = reg.predict(X_test)
-r2 = r2_score(y_test, y_pred)
-mae = mean_absolute_error(y_test, y_pred)
-st.text(f'R²: {r2:.2f}, MAE: {mae:.2f}')
+df = pd.read_parquet("data/DataSetAcidentesRecifeTratado.parquet")
 
 scatter = alt.Chart(df).mark_point().encode(x='vitimas', y='velocidade_max_via')
 st.altair_chart(scatter, use_container_width=True)
@@ -88,3 +53,5 @@ vitimas_chart = alt.Chart(df).mark_bar().encode(
     height=400
 )
 st.altair_chart(vitimas_chart)
+
+
