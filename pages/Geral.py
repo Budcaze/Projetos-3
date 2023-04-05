@@ -76,16 +76,15 @@ df_selection.rename(columns={'tempo_clima':'Clima'}, inplace=True) # altera o no
 VitimasTotais = df_selection.groupby(['Ano'])['Número de vítimas'].sum()
 VitimasTotais = VitimasTotais.reset_index()
 
+vitimasOrg = VitimasTotais = df_selection.groupby(['Ano'])['Número de vítimas'].sum().sort_values(ascending=False)
+vitimasOrg = vitimasOrg.reset_index()
+ano_primeira_linha = vitimasOrg['Ano'].iloc[0]
+media_vitimas = VitimasTotais.mean()
+#st.dataframe(vitimasOrg)
 left_column, middle_column, right_column = st.columns(3)
-with left_column:
-    st.subheader("Bairro com mais vitimas: ")
-    st.subheader("Boa Viagem")
 with middle_column:
-    st.subheader("Total de Vitimas: ")
-    st.subheader("Soma do total dos anos")
-with right_column:
-    st.subheader("Clima mais aparente: ")
-    st.subheader("Um CLIMA AI") 
+    st.subheader(f"Ano com mais vítimas: {ano_primeira_linha}")
+    st.subheader(f"Média anual de vítimas: {media_vitimas}")
 st.markdown("---------")
 
 anoVitimas = df_selection[['Ano', 'Número de vítimas']]
