@@ -249,26 +249,6 @@ scatter = alt.Chart(df_selection).mark_point().encode(x='Número de vítimas', y
 st.altair_chart(scatter, use_container_width=True)
 
 
-#### fatais x hora #####
-
-### Relação entre a hora do acidente e a quantidade de óbitos ###
-dataAcidentes = df_selection[['Condição da via', 'Vítimas Fatais', 'data']]
-dataAcidentes['data'] = pd.to_datetime(dataAcidentes['data'])
-dataAcidentes['data'] = dataAcidentes['data'].df.month()
-
-
-scatter = alt.Chart(horaAcidentes).mark_circle(size=60).encode(
-    x=alt.X('data', axis=alt.Axis(labelAngle=0, domain=False, tickSize=0)),
-    y=alt.Y('sum(Vítimas Fatais)', title= "Quantidade de óbitos"),
-   color='Condição da via',
-).interactive().properties(
-    title='Relação entre a hora do acidente e a quantidade de óbitos'
-).configure_title(  # formata o titulo
-    fontSize = 20,
-    anchor= 'middle',   # centraliza o titulo
-    color= 'black'
-) 
-#st.altair_chart(scatter, use_container_width=True)
 
 #Valores totais de acidentes por ano (quantidade de vezes que cada ano aparece no dataset)
 
