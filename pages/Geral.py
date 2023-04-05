@@ -19,6 +19,9 @@ df['vitimasfatais'] = df['vitimasfatais'].astype('int64') # Converte para inteir
 # Converte o ano para string
 df['Ano'] = df['Ano'].astype('str') #Converte para string
 
+#converte para datatime
+df['hora'] = pd.to_datetime(df['hora'], format='%H:%M:%S')
+
 #Remover o Km/h da coluna velocidade_max_via
 df['velocidade_max_via'].replace({' km/h':''},regex=True,inplace=True)
 df['velocidade_max_via'].replace({'KM/H':''},regex=True,inplace=True)
@@ -85,7 +88,6 @@ with right_column:
     st.subheader("Um CLIMA AI") 
 st.markdown("---------")
 
-st.dataframe(df_selection)
 anoVitimas = df_selection[['Ano', 'Número de vítimas']]
 
 # Gráficos
@@ -103,6 +105,26 @@ linechart = alt.Chart(anoVitimas).mark_line().encode(
     color= 'black'
 ) 
 st.altair_chart(linechart, use_container_width=True)
+
+
+### Vítimas Fatais por Ano ###
+
+VitimasFatais = df_selection.groupby(['Ano'])['Vítimas Fatais'].sum()
+VitimasFatais = VitimasFatais.reset_index()
+
+bar_chart = alt.Chart(VitimasFatais).mark_bar(color='red').encode(      # color= '', define a cor do gráfico
+    x= 'Ano',
+    y= 'Vítimas Fatais'
+).configure_axisX(      # propriedades do eixo x
+    labelAngle=0    # rotaciona os labels do eixo x
+).properties(   # propriedades do gráfico
+    title='Vítimas Fatais por Ano' # adiciona o titulo no gráfico
+).configure_title(  # formata o titulo
+    fontSize = 20,
+    anchor= 'middle',   # centraliza o titulo
+    color= 'black'
+) 
+st.altair_chart(bar_chart, use_container_width=True)
 
 ### Distribuição dos veículos envolvidos em acidentes ###
 
@@ -132,12 +154,13 @@ chart = alt.Chart(veiculos_df).mark_bar().encode(
 st.altair_chart(chart, use_container_width=True)
 
 
-### Relação entre a hora do acidente e a quantidade de óbitos ###
+### Relação entre a hora do acidente e a quantidade de acidentes ###
 horaAcidentes = df_selection[['hora', 'Número de vítimas']]
+horaAcidentes['hora'] = horaAcidentes['hora'].dt.hour
 
 scatter = alt.Chart(horaAcidentes).mark_circle(size=60).encode(
     x=alt.X('hora', axis=alt.Axis(labelAngle=0, domain=False, tickSize=0)),
-    y='Número de vítimas',
+    y=alt.Y('sum(Número de vítimas)', title="Quantidade de vítimas"),
     #tooltip=[]
 ).interactive().properties(
     title='Relação entre a hora do acidente e a quantidade de acidentes'
@@ -147,6 +170,26 @@ scatter = alt.Chart(horaAcidentes).mark_circle(size=60).encode(
     color= 'black'
 ) 
 st.altair_chart(scatter, use_container_width=True)
+
+#### fatais x hora #####
+
+### Relação entre a hora do acidente e a quantidade de óbitos ###
+horaAcidentes = df_selection[['hora', 'Vítimas Fatais']]
+horaAcidentes['hora'] = horaAcidentes['hora'].dt.hour
+
+scatter = alt.Chart(horaAcidentes).mark_circle(size=60).encode(
+    x=alt.X('hora', axis=alt.Axis(labelAngle=0, domain=False, tickSize=0)),
+    y=alt.Y('sum(Vítimas Fatais)', title= "Quantidade de óbitos"),
+    #tooltip=[]
+).interactive().properties(
+    title='Relação entre a hora do acidente e a quantidade de óbitos'
+).configure_title(  # formata o titulo
+    fontSize = 20,
+    anchor= 'middle',   # centraliza o titulo
+    color= 'black'
+) 
+st.altair_chart(scatter, use_container_width=True)
+
 
 ###  ###
 
@@ -200,6 +243,32 @@ heat = alt.Chart(velFatal).mark_rect().encode(
     color= 'black'
 )
 st.altair_chart(heat, use_container_width=True)
+
+#######
+scatter = alt.Chart(df_selection).mark_point().encode(x='Número de vítimas', y='velocidade_max_via')
+st.altair_chart(scatter, use_container_width=True)
+
+
+#### fatais x hora #####
+
+### Relação entre a hora do acidente e a quantidade de óbitos ###
+dataAcidentes = df_selection[['Condição da via', 'Vítimas Fatais', 'data']]
+dataAcidentes['data'] = pd.to_datetime(dataAcidentes['data'])
+dataAcidentes['data'] = dataAcidentes['data'].df.month()
+
+
+scatter = alt.Chart(horaAcidentes).mark_circle(size=60).encode(
+    x=alt.X('data', axis=alt.Axis(labelAngle=0, domain=False, tickSize=0)),
+    y=alt.Y('sum(Vítimas Fatais)', title= "Quantidade de óbitos"),
+   color='Condição da via',
+).interactive().properties(
+    title='Relação entre a hora do acidente e a quantidade de óbitos'
+).configure_title(  # formata o titulo
+    fontSize = 20,
+    anchor= 'middle',   # centraliza o titulo
+    color= 'black'
+) 
+#st.altair_chart(scatter, use_container_width=True)
 
 #Valores totais de acidentes por ano (quantidade de vezes que cada ano aparece no dataset)
 
