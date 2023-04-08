@@ -22,6 +22,12 @@ df['Ano'] = df['Ano'].astype('str') #Converte para string
 #converte para datatime
 df['hora'] = pd.to_datetime(df['hora'], format='%H:%M:%S')
 
+df['tipo'].replace({'MMMMMMMMMMMMNNNNNNNNNNNNNNC' :0},regex=True,inplace=True)
+df['tipo'].replace({'SANTO AMARO' :0},regex=True,inplace=True)
+df['tipo'] = df['tipo'].fillna(0)
+df['tipo'].replace({0 :'SEM INFORMACOES'},regex=True,inplace=True)
+df['tipo'].replace({'0' :'SEM INFORMACOES'},regex=True,inplace=True)
+
 #Remover o Km/h da coluna velocidade_max_via
 df['velocidade_max_via'].replace({' km/h':''},regex=True,inplace=True)
 df['velocidade_max_via'].replace({'KM/H':''},regex=True,inplace=True)
