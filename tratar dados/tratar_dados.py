@@ -174,3 +174,43 @@ df['ponto_controle'] = df['ponto_controle'].fillna(0)
 #Tratar situacao_placa
 #Define 0 para None
 df['situacao_placa'] = df['situacao_placa'].fillna(0)
+
+#Tratar velocidade_max_via
+#Define 0 para None
+#Remover o Km/h da coluna velocidade_max_via
+df['velocidade_max_via'].replace({'km/h':''},regex=True,inplace=True)
+df['velocidade_max_via'].replace({'KM/H':''},regex=True,inplace=True)
+df['velocidade_max_via'].replace({'km':''},regex=True,inplace=True)
+df['velocidade_max_via'].replace({'KM':''},regex=True,inplace=True)
+df['velocidade_max_via'].replace({'N/I':0},regex=True,inplace=True)
+df['velocidade_max_via'].replace({'n/i':0},regex=True,inplace=True)
+df['velocidade_max_via'].replace({'/h':''},regex=True,inplace=True)
+df['velocidade_max_via'].replace({'30 e 40':40},regex=True,inplace=True)
+df['velocidade_max_via'].replace({'':0},regex=True,inplace=True)
+df['velocidade_max_via'] = df['velocidade_max_via'].fillna(0) # substitui o vazio por 0
+df['velocidade_max_via'] = df['velocidade_max_via'].astype('int64') # Converte para inteiro
+
+#Tratar mao_direcao
+#Define 0 para None
+df['mao_direcao'] = df['mao_direcao'].fillna(0)
+
+#Tratar divisao_via1
+#Define 0 para None
+df['divisao_via1'] = df['divisao_via1'].fillna(0)
+
+
+#Tratar divisao_via2
+#Define 0 para None
+df['divisao_via2'] = df['divisao_via2'].fillna(0)
+
+#Tratar divisao_via3
+#Define 0 para None
+df['divisao_via3'] = df['divisao_via3'].fillna(0)
+
+#display(df['velocidade_max_via'].unique())
+#display(df)
+#df.to_csv('C:/Users/igory/Documents/4_periodo_UFRPE/Projeto_3/datasets/dados_tratados/DataSetAcidentesRecifeTratado.csv')
+#df.to_parquet('DataSetAcidentesRecifeTratado.parquet')
+#display(df.dtypes)
+#coluna = df['natureza_acidente'].unique()
+#display(coluna)
