@@ -16,3 +16,9 @@ df['data'] = pd.to_datetime(df['data'])
 #Define 0 para None
 df['hora'] = df['hora'].fillna(0)
 df['hora'] = df['hora'].astype(str)
+
+#Tratar natureza_acidente
+#Define 0 para None e outros valores errados
+df['natureza_acidente'] = df['natureza_acidente'].fillna(0)
+df['natureza_acidente'] = df['natureza_acidente'].replace('0', 0)
+df['natureza_acidente'] = df['natureza_acidente'].replace('1', 0)
