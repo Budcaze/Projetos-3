@@ -39,3 +39,30 @@ df['bairro'] = df['bairro'].replace('IPESEP', 'IPSEP')
 df['bairro'] = df['bairro'].replace('JOANA BEZERRA', 'ILHA JOANA BEZERRA')
 df['bairro'] = df['bairro'].replace('MARCELO', 0)
 df['bairro'] = df['bairro'].astype(str)
+
+# endereco
+df['endereco'] = df['endereco'].astype(str)
+
+# detalhe_endereco_acidente
+df['detalhe_endereco_acidente'] = df['detalhe_endereco_acidente'].astype(str)
+
+# complemento
+df['complemento'] = df['complemento'].astype(str)
+
+# bairro_cruzamento
+df['bairro_cruzamento'] = df['bairro_cruzamento'].astype(str)
+
+# sentido_via
+df['sentido_via'] = df['sentido_via'].astype(str)
+
+# acidente_verificado
+df['acidente_verificado'] = df['acidente_verificado'].astype(str)
+
+# situacao_semaforo
+df['situacao_semaforo'] = df['situacao_semaforo'].astype(str)
+
+# ponto_controle
+df['ponto_controle'] = df['ponto_controle'].astype(str)
+
+# situacao_placa
+df['situacao_placa'] = df['situacao_placa'].astype(str)
