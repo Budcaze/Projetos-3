@@ -66,3 +66,34 @@ df['ponto_controle'] = df['ponto_controle'].astype(str)
 
 # situacao_placa
 df['situacao_placa'] = df['situacao_placa'].astype(str)
+
+#Tratar vitimas
+#Define 0 para None
+df['vitimas'] = df['vitimas'].fillna(0)
+df['vitimas'] = df['vitimas'].astype('int64')
+
+
+#Tratar vitimasfatais
+#Define 0 para None
+df['vitimasfatais'] = df['vitimasfatais'].fillna(0)
+df['vitimasfatais'] = df['vitimasfatais'].astype('int64')
+
+#Tratar sentido_via
+#Define 0 para None
+df['sentido_via'] = df['sentido_via'].fillna(0)
+
+#Tratar tipo
+#Define 0 para None e outros valores errados
+df['tipo'] = df['tipo'].fillna(0)
+df['tipo'] = df['tipo'].replace('0', 0)
+df['tipo'] = df['tipo'].replace('APOIO COMPESA', 0)
+df['tipo'] = df['tipo'].replace('ATROPELAMENTO DE PESSOA', 'ATROPELAMENTO')
+df['tipo'] = df['tipo'].replace('ATROPELAMENTO ANIMAL', 'ATROPELAMENTO DE ANIMAL')
+df['tipo'] = df['tipo'].replace('COLISAO', 'COLISÃO')
+df['tipo'] = df['tipo'].replace('FISCALIZAÇÃO', 0)
+df['tipo'] = df['tipo'].replace('MONITORAMENTO', 0)
+df['tipo'] = df['tipo'].replace('MMMMMMMMMMMMNNNNNNNNNNNNNNC', 0)
+df['tipo'] = df['tipo'].replace('OUTROS APOIOS', 'OUTROS')
+df['tipo'] = df['tipo'].replace('SANTO AMARO', 0)
+df['tipo'] = df['tipo'].replace('SEMÁFORO', 0)
+df['tipo'] = df['tipo'].replace('SUBURBIO', 0)
