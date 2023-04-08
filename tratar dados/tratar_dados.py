@@ -97,3 +97,80 @@ df['tipo'] = df['tipo'].replace('OUTROS APOIOS', 'OUTROS')
 df['tipo'] = df['tipo'].replace('SANTO AMARO', 0)
 df['tipo'] = df['tipo'].replace('SEMÁFORO', 0)
 df['tipo'] = df['tipo'].replace('SUBURBIO', 0)
+
+#Tratar auto
+#Define 0 para None
+df['auto'] = df['auto'].fillna(0)
+df['auto'] = df['auto'].astype('int64')
+
+#Tratar moto
+#Define 0 para None
+df['moto'] = df['moto'].fillna(0)
+df['moto'] = df['moto'].astype('int64')
+
+#Tratar ciclom
+#Define 0 para None
+df['ciclom'] = df['ciclom'].fillna(0)
+df['ciclom'] = df['ciclom'].astype('int64')
+
+#Tratar ciclista
+#Define 0 para None
+df['ciclista'] = df['ciclista'].fillna(0)
+df['ciclista'] = df['ciclista'].astype('int64')
+
+#Tratar pedestre
+#Define 0 para None
+df['pedestre'] = df['pedestre'].fillna(0)
+df['pedestre'] = df['pedestre'].astype('int64')
+
+#Tratar onibus
+#Define 0 para None
+df['onibus'] = df['onibus'].fillna(0)
+df['onibus'] = df['onibus'].astype('int64')
+
+#Tratar caminhao
+#Define 0 para None
+df['caminhao'] = df['caminhao'].fillna(0)
+df['caminhao'] = df['caminhao'].astype('int64')
+
+#Tratar viatura
+#Define 0 para None
+df['viatura'] = df['viatura'].fillna(0)
+df['viatura'] = df['viatura'].astype('int64')
+
+#Tratar outros
+#Define 0 para None
+df['outros'] = df['outros'].fillna(0)
+df['outros'] = df['outros'].astype('int64')
+
+#Tratar acidente_verificado
+#Define 0 para None
+df['acidente_verificado'] = df['acidente_verificado'].fillna(0)
+
+#Tratar tempo_clima
+#Define 0 para None
+df['tempo_clima'] = df['tempo_clima'].fillna(0)
+
+#Tratar situacao_semaforo
+#Define 0 para None
+df['situacao_semaforo'] = df['situacao_semaforo'].fillna(0)
+
+#Tratar sinalizacao
+#Define 0 para None
+df['sinalizacao'] = df['sinalizacao'].fillna(0)
+
+#Tratar condicao_via
+#Define 0 para None
+df['condicao_via'] = df['condicao_via'].fillna(0)
+
+#Tratar conservacao_via
+#Define 0 para None
+df['conservacao_via'] = df['conservacao_via'].fillna(0)
+
+#Tratar ponto_controle
+#Define 0 para None
+df['ponto_controle'] = df['ponto_controle'].fillna(0)
+
+#Tratar situacao_placa
+#Define 0 para None
+df['situacao_placa'] = df['situacao_placa'].fillna(0)
