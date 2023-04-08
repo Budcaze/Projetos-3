@@ -207,13 +207,6 @@ df['divisao_via2'] = df['divisao_via2'].fillna(0)
 #Define 0 para None
 df['divisao_via3'] = df['divisao_via3'].fillna(0)
 
-#display(df['velocidade_max_via'].unique())
-#display(df)
-#df.to_csv('C:/Users/igory/Documents/4_periodo_UFRPE/Projeto_3/datasets/dados_tratados/DataSetAcidentesRecifeTratado.csv')
-#df.to_parquet('DataSetAcidentesRecifeTratado.parquet')
-#display(df.dtypes)
-#coluna = df['natureza_acidente'].unique()
-#display(coluna)
 
 ######################## Conversão de variáveis categóricas em numéricas ##########################
 
