@@ -81,11 +81,6 @@ vitimasOrg = vitimasOrg.reset_index()
 ano_primeira_linha = vitimasOrg['Ano'].iloc[0]
 media_vitimas = VitimasTotais.mean()
 #st.dataframe(vitimasOrg)
-left_column, middle_column, right_column = st.columns(3)
-with middle_column:
-    st.subheader(f"Ano com mais vítimas: {ano_primeira_linha}")
-    st.subheader(f"Média anual de vítimas: {media_vitimas}")
-st.markdown("---------")
 
 anoVitimas = df_selection[['Ano', 'Número de vítimas']]
 
@@ -104,12 +99,13 @@ linechart = alt.Chart(anoVitimas).mark_line().encode(
     color= 'black'
 ) 
 st.altair_chart(linechart, use_container_width=True)
-
+st.text('')
 
 ### Vítimas Fatais por Ano ###
 
 VitimasFatais = df_selection.groupby(['Ano'])['Vítimas Fatais'].sum()
 VitimasFatais = VitimasFatais.reset_index()
+
 
 bar_chart = alt.Chart(VitimasFatais).mark_bar(color='red').encode(      # color= '', define a cor do gráfico
     x= 'Ano',
@@ -138,6 +134,7 @@ for veiculo in veiculos:
 veiculos_df = pd.DataFrame(veiculos_data)
 
 
+
 chart = alt.Chart(veiculos_df).mark_bar().encode(
     x=alt.X('Tipo de veículo', sort=veiculos, axis=alt.Axis(labelAngle=0, domain=False, tickSize=0)),
     y='Quantidade',
@@ -156,6 +153,7 @@ st.altair_chart(chart, use_container_width=True)
 ### Relação entre a hora do acidente e a quantidade de acidentes ###
 horaAcidentes = df_selection[['hora', 'Número de vítimas']]
 horaAcidentes['hora'] = horaAcidentes['hora'].dt.hour
+
 
 scatter = alt.Chart(horaAcidentes).mark_circle(size=60).encode(
     x=alt.X('hora', axis=alt.Axis(labelAngle=0, domain=False, tickSize=0)),
@@ -176,6 +174,7 @@ st.altair_chart(scatter, use_container_width=True)
 horaAcidentes = df_selection[['hora', 'Vítimas Fatais']]
 horaAcidentes['hora'] = horaAcidentes['hora'].dt.hour
 
+
 scatter = alt.Chart(horaAcidentes).mark_circle(size=60).encode(
     x=alt.X('hora', axis=alt.Axis(labelAngle=0, domain=False, tickSize=0)),
     y=alt.Y('sum(Vítimas Fatais)', title= "Quantidade de óbitos"),
@@ -193,6 +192,7 @@ st.altair_chart(scatter, use_container_width=True)
 ###  ###
 
 tipoAcAno = df_selection.groupby(['Ano','tipo'], as_index=False)['tipo'].size()
+
 
 streamgraph = alt.Chart(tipoAcAno).mark_area().encode(
     alt.X('Ano', axis=alt.Axis(labelAngle=0, domain=False, tickSize=0)),
@@ -212,6 +212,8 @@ st.altair_chart(streamgraph, use_container_width=True)
 
 
 ### Vitimas x velocidade maxima x Condição da via###
+
+
 vitimasVelVia = df_selection[['Número de vítimas', 'Condição da via', 'velocidade_max_via']]
 vitimasVelVia = vitimasVelVia.dropna()    #remove os nulos
 scatter1 = alt.Chart(vitimasVelVia).mark_circle(size=60).encode(
@@ -230,6 +232,8 @@ st.altair_chart(scatter1, use_container_width=True)
 
 ###  ###
 velFatal = df_selection[['Vítimas Fatais', 'velocidade_max_via']]
+
+
 heat = alt.Chart(velFatal).mark_rect().encode(
     alt.X('Vítimas Fatais:Q', title='Vítimas Fatais', bin=alt.Bin(maxbins=60)),
     alt.Y('velocidade_max_via:Q', title='Velocidade Máxima da Via', bin=alt.Bin(maxbins=40)),
@@ -243,7 +247,7 @@ heat = alt.Chart(velFatal).mark_rect().encode(
 )
 st.altair_chart(heat, use_container_width=True)
 
-#######
+
 scatter = alt.Chart(df_selection).mark_point().encode(x='Número de vítimas', y='velocidade_max_via')
 st.altair_chart(scatter, use_container_width=True)
 

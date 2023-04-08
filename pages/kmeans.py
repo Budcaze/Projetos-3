@@ -4,7 +4,6 @@ from sklearn.cluster import KMeans
 from matplotlib import pyplot as plt
 from sklearn.preprocessing import scale
 
-%matplotlib inline
 
 df = pd.read_parquet("data/DataSetAcidentesRecife.parquet")
 
