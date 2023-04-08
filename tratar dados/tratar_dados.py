@@ -214,3 +214,39 @@ df['divisao_via3'] = df['divisao_via3'].fillna(0)
 #display(df.dtypes)
 #coluna = df['natureza_acidente'].unique()
 #display(coluna)
+
+######################## Conversão de variáveis categóricas em numéricas ##########################
+
+# natureza_acidente
+df['natureza_acidente'] = df['natureza_acidente'].replace(['APOIO', 'CHOQUE', 'COM VÍTIMA', 'ENTRADA E SAÍDA', 'OUTROS', 'SEM VÍTIMA', 'VÍTIMA FATAL'], [1, 2, 3, 4, 5, 6, 7])
+
+# situacao
+df['situacao'] = df['situacao'].replace(['CANCELADA', 'CRUZAMENTO COM A AV NORTE', 'DUPLICIDADE', 'EM ABERTO', 'EM ATENDIMENTO', 'EQUIPE EM DESLOCAMENTO', 'EQUIPE NO LOCAL', 'EVADIU-SE', 'FINALIZADA', 'PENDENTE']
+, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
+
+# tipo
+df['tipo'] = df['tipo'].replace(['ABALROAMENTO LONGITUDINAL', 'ABALROAMENTO TRANSVERSAL', 'ACID. DE PERCURSO', 'ALAGAMENTO', 'ATROPELAMENTO', 'ATROPELAMENTO DE ANIMAL', 'CAPOTAMENTO', 'CHOQUE', 'CHOQUE OBJETO FIXO', 'CHOQUE VEÍCULO PARADO', 'COLISÃO', 'COLISÃO COM CICLISTA', 'COLISÃO FRONTAL', 'COLISÃO LATERAL', 'COLISÃO TRANSVERSAL', 'COLISÃO TRASEIRA', 'ENGAVETAMENTO', 'NATUREZA', 'OUTROS', 'QUEDA', 'QUEDA DE ÁRVORE', 'TOMBAMENTO'], [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22])
+
+# tempo_clima
+df['tempo_clima'] = df['tempo_clima'].replace(['Bom', 'Chuvoso', 'Nublado'],[1, 2, 3])
+
+# sinalizacao
+df['sinalizacao'] = df['sinalizacao'].replace(['Ilegível', 'Incompleta', 'Não existente', 'Perfeito estado'], [1, 2, 3, 4])
+
+# condicao_via
+df['condicao_via'] = df['condicao_via'].replace(['Molhada', 'Oleosa', 'Outros', 'Seca'], [1, 2, 3, 4])
+
+# conservacao_via
+df['conservacao_via'] = df['conservacao_via'].replace(['Mal conservada', 'Mal iluminada', 'Não há', 'Outros', 'Perfeito estado'], [1, 2, 3, 4, 5])
+
+# mao_direcao
+df['mao_direcao'] = df['mao_direcao'].replace(['Dupla', 'Inglesa', 'Única'], [1, 2, 3])
+
+# divisao_via1
+df['divisao_via1'] = df['divisao_via1'].replace(['Blocos', 'Canal', 'Canteiro central', 'Faixa', 'Faixa contínua', 'Faixa seccionada', 'Não existe', 'Outros'], [1, 2, 3, 4, 5, 6, 7, 8])
+
+# divisao_via2
+df['divisao_via2'] = df['divisao_via2'].replace(['Blocos', 'Canal', 'Canteiro central', 'Faixa contínua', 'Faixa seccionada', 'Não existe', 'Outros'], [1, 2, 3, 4, 5, 6, 7])
+
+# divisao_via3
+df['divisao_via3'] = df['divisao_via3'].replace(['Blocos', 'Canal', 'Canteiro central', 'Faixa contínua', 'Não existe'], [1, 2, 3, 4, 5])
