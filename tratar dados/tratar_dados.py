@@ -22,3 +22,20 @@ df['hora'] = df['hora'].astype(str)
 df['natureza_acidente'] = df['natureza_acidente'].fillna(0)
 df['natureza_acidente'] = df['natureza_acidente'].replace('0', 0)
 df['natureza_acidente'] = df['natureza_acidente'].replace('1', 0)
+
+
+#Tratar situacao
+#Define 0 para None
+df['situacao'] = df['situacao'].fillna(0)
+
+#Tratar bairro
+#Define 0 para None e outros valores errados
+df['bairro'] = df['bairro'].fillna(0)
+df['bairro'] = df['bairro'].replace('BAIRRO DO RECIFE', 'RECIFE')
+df['bairro'] = df['bairro'].replace('BOA  VIAGEM', 'BOA VIAGEM')
+df['bairro'] = df['bairro'].replace('BOMBA DO HEMETERIO', 'BOMBA DO HEMETÉRIO')
+df['bairro'] = df['bairro'].replace('FABIO', 0)
+df['bairro'] = df['bairro'].replace('IPESEP', 'IPSEP')
+df['bairro'] = df['bairro'].replace('JOANA BEZERRA', 'ILHA JOANA BEZERRA')
+df['bairro'] = df['bairro'].replace('MARCELO', 0)
+df['bairro'] = df['bairro'].astype(str)
