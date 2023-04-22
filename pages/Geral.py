@@ -1,13 +1,14 @@
 import pandas as pd
 import streamlit as st
 import altair as alt
+import seaborn as sns
+import matplotlib.pyplot as plt
 
-st.set_page_config(page_title="Acidentes Recife", # Configuração do setpage, ou seja, informações da página.
-    page_icon=":warning:",
-    layout="wide")
-df = pd.read_parquet("data/DataSetAcidentesRecife.parquet") # Abertura do DataSet.
 
-st.title("Geral")
+df = pd.read_parquet("data/DataSetAcidentesRecife.parquet")
+df_tratado = pd.read_parquet("data/DataSetAcidentesRecifeTratado.parquet") # Abertura do DataSet.
+
+st.title("Análise de Acidentes de Trânsito em Recife")
 
 # Converte o tipo das colunas para inteiro
 df['vitimas'] = df['vitimas'].fillna(0) # substitui o vazio por 0
@@ -20,6 +21,7 @@ df['vitimasfatais'] = df['vitimasfatais'].astype('int64') # Converte para inteir
 df['Ano'] = df['Ano'].astype('str') #Converte para string
 
 #converte para datatime
+df = df.dropna(subset=['hora'])
 df['hora'] = pd.to_datetime(df['hora'], format='%H:%M:%S')
 
 df['tipo'].replace({'MMMMMMMMMMMMNNNNNNNNNNNNNNC' :0},regex=True,inplace=True)
@@ -67,225 +69,84 @@ df_selection = df.query( #Aqui eu vou atribuir a varivavel que eu criei nos side
 )
 # st.dataframe(df_selection) #Aqui eu chamo nosso dataset para ele aparecer
 
+#bairro x numero de acidentes
+bairro_counts = df['bairro'].value_counts().reset_index()
+bairro_counts.columns = ['bairro', 'counts']
+top_bairros = bairro_counts.head(15)['bairro'].tolist()
 
+chart_data = df.groupby(['bairro']).size().reset_index(name='counts')
+chart_data = chart_data[chart_data['bairro'].isin(top_bairros)]
 
-##### Gráficos #####
-
-#Vítimas fatais por ano  (Interativo)
-df_selection.rename(columns={'vitimasfatais':'Vítimas Fatais'}, inplace=True) # altera o nome da coluna
-df_selection.rename(columns={'acidente_verificado':'Localização na via'}, inplace=True) # altera o nome da coluna
-df_selection.rename(columns={'condicao_via':'Condição da via'}, inplace=True) # altera o nome da coluna
-df_selection.rename(columns={'vitimas':'Número de vítimas'}, inplace=True) # altera o nome da coluna
-df_selection.rename(columns={'bairro':'Bairro'}, inplace=True) # altera o nome da coluna
-df_selection.rename(columns={'tempo_clima':'Clima'}, inplace=True) # altera o nome da coluna
-
-VitimasTotais = df_selection.groupby(['Ano'])['Número de vítimas'].sum()
-VitimasTotais = VitimasTotais.reset_index()
-
-vitimasOrg = VitimasTotais = df_selection.groupby(['Ano'])['Número de vítimas'].sum().sort_values(ascending=False)
-vitimasOrg = vitimasOrg.reset_index()
-ano_primeira_linha = vitimasOrg['Ano'].iloc[0]
-media_vitimas = VitimasTotais.mean()
-#st.dataframe(vitimasOrg)
-
-anoVitimas = df_selection[['Ano', 'Número de vítimas']]
-
-# Gráficos
-
-### Tendência de acidentes e vítimas ao longo dos anos ###
-linechart = alt.Chart(anoVitimas).mark_line().encode(
-    x=alt.X("Ano", axis=alt.Axis(labelAngle=0, domain=False, tickSize=0)),
-    y=alt.Y("sum(Número de vítimas)", title='Número de Vítimas'),
-    #color=alt.datum(alt.repeat("layer")),
-).properties(   # propriedades do gráfico
-    title='Tendência de acidentes com vítimas ao longo dos anos' # adiciona o titulo no gráfico
-).configure_title(  # formata o titulo
-    fontSize = 20,
-    anchor= 'middle',   # centraliza o titulo
-    color= 'black'
-) 
-st.altair_chart(linechart, use_container_width=True)
-st.text('')
-
-### Vítimas Fatais por Ano ###
-
-VitimasFatais = df_selection.groupby(['Ano'])['Vítimas Fatais'].sum()
-VitimasFatais = VitimasFatais.reset_index()
-
-
-bar_chart = alt.Chart(VitimasFatais).mark_bar(color='red').encode(      # color= '', define a cor do gráfico
-    x= 'Ano',
-    y= 'Vítimas Fatais'
-).configure_axisX(      # propriedades do eixo x
-    labelAngle=0    # rotaciona os labels do eixo x
-).properties(   # propriedades do gráfico
-    title='Vítimas Fatais por Ano' # adiciona o titulo no gráfico
-).configure_title(  # formata o titulo
-    fontSize = 20,
-    anchor= 'middle',   # centraliza o titulo
-    color= 'black'
-) 
-st.altair_chart(bar_chart, use_container_width=True)
-
-### Distribuição dos veículos envolvidos em acidentes ###
-
-# define a lista de colunas de veículos
-veiculos_data = []
-veiculos = ['auto', 'moto', 'ciclom', 'ciclista', 'onibus', 'caminhao', 'viatura', 'outros']
-
-# transforma os dados em um formato apropriado para o gráfico
-for veiculo in veiculos:
-    veiculos_data.append({'Tipo de veículo': veiculo, 'Quantidade': df_selection[veiculo].sum()})
-
-veiculos_df = pd.DataFrame(veiculos_data)
-
-
-
-chart = alt.Chart(veiculos_df).mark_bar().encode(
-    x=alt.X('Tipo de veículo', sort=veiculos, axis=alt.Axis(labelAngle=0, domain=False, tickSize=0)),
-    y='Quantidade',
-    color=alt.Color('Tipo de veículo', sort=veiculos),
-    tooltip=['Tipo de veículo', 'Quantidade']
-).properties(
-    title='Distribuição de veículos envolvidos em acidentes'
-).configure_title(  # formata o titulo
-    fontSize = 20,
-    anchor= 'middle',   # centraliza o titulo
-    color= 'black'
-) 
+st.write("Aqui está um gráfico de barras que mostra a quantidade de acidentes por bairro:")
+chart = alt.Chart(chart_data).mark_bar().encode(x='counts', y=alt.Y('bairro', sort='-x'), text='counts')
 st.altair_chart(chart, use_container_width=True)
 
 
-### Relação entre a hora do acidente e a quantidade de acidentes ###
-horaAcidentes = df_selection[['hora', 'Número de vítimas']]
-horaAcidentes['hora'] = horaAcidentes['hora'].dt.hour
+#tendência de acidentes ao longo do tempo
+st.write("Aqui está um gráfico de linhas que mostra a tendência dos acidentes ao longo do tempo:")
+chart_data = df.groupby(['data']).size().reset_index(name='counts')
+chart = alt.Chart(chart_data).mark_line().encode(x='data', y='counts')
+st.altair_chart(chart, use_container_width=True)
 
 
-scatter = alt.Chart(horaAcidentes).mark_circle(size=60).encode(
-    x=alt.X('hora', axis=alt.Axis(labelAngle=0, domain=False, tickSize=0)),
-    y=alt.Y('sum(Número de vítimas)', title="Quantidade de vítimas"),
-    #tooltip=[]
-).interactive().properties(
-    title='Relação entre a hora do acidente e a quantidade de acidentes'
-).configure_title(  # formata o titulo
-    fontSize = 20,
-    anchor= 'middle',   # centraliza o titulo
-    color= 'black'
-) 
-st.altair_chart(scatter, use_container_width=True)
 
-#### fatais x hora #####
-
-### Relação entre a hora do acidente e a quantidade de óbitos ###
-horaAcidentes = df_selection[['hora', 'Vítimas Fatais']]
-horaAcidentes['hora'] = horaAcidentes['hora'].dt.hour
+#hora do dia x numero de acidentes
+st.write("Aqui está um gráfico de barras que mostra a quantidade de acidentes por hora no dia:")
+chart_data = df.groupby(df['hora'].dt.hour).size().reset_index(name='counts')
+chart = alt.Chart(chart_data).mark_bar().encode(x=alt.X('hora:O', title='Hora do dia', axis=alt.AxisConfig(labelAngle=0)), y=alt.Y('counts', title='Número de acidentes'))
+st.altair_chart(chart, use_container_width=True)
 
 
-scatter = alt.Chart(horaAcidentes).mark_circle(size=60).encode(
-    x=alt.X('hora', axis=alt.Axis(labelAngle=0, domain=False, tickSize=0)),
-    y=alt.Y('sum(Vítimas Fatais)', title= "Quantidade de óbitos"),
-    #tooltip=[]
-).interactive().properties(
-    title='Relação entre a hora do acidente e a quantidade de óbitos'
-).configure_title(  # formata o titulo
-    fontSize = 20,
-    anchor= 'middle',   # centraliza o titulo
-    color= 'black'
-) 
-st.altair_chart(scatter, use_container_width=True)
+st.write("Aqui está um gráfico de barras que mostra a correlação das vítimas fatais com a condição da via:")
+# Criar novo DataFrame com as colunas relevantes
+df_corr = df[["condicao_via", "vitimasfatais"]]
 
+# Cálculo da correlação
+correlations = df_corr.corr()["vitimasfatais"].drop("vitimasfatais")
+correlations = correlations[correlations.abs() > 0.1]
 
-###  ###
-
-tipoAcAno = df_selection.groupby(['Ano','tipo'], as_index=False)['tipo'].size()
-
-
-streamgraph = alt.Chart(tipoAcAno).mark_area().encode(
-    alt.X('Ano', axis=alt.Axis(labelAngle=0, domain=False, tickSize=0)),
-    alt.Y('sum(size):Q', axis=None, title='Quantidade de Ocorrências'),
-    alt.Color('tipo',
-        scale=alt.Scale(scheme='category20b')
+# Gráfico de correlação
+correlation_chart = alt.Chart(df_corr).mark_bar().encode(
+    x=alt.X("condicao_via", title='Condição da Via', axis=alt.AxisConfig(labelAngle=0)),
+    y=alt.Y("vitimasfatais", title="Correlação"),
+    color=alt.condition(
+        alt.datum.vitimasfatais > 0,
+        alt.value("green"), alt.value("red")
     )
-).interactive(
-
-).properties(   # propriedades do gráfico
-  title='Tipo do Acidente x Ocorrências', # adiciona o titulo no gráfico
-    width= 900,
-    height=400
-).configure_legend(labelLimit=0)    #exibir o texto da legenda por completo
-
-st.altair_chart(streamgraph, use_container_width=True)
-
-
-### Vitimas x velocidade maxima x Condição da via###
-
-
-vitimasVelVia = df_selection[['Número de vítimas', 'Condição da via', 'velocidade_max_via']]
-vitimasVelVia = vitimasVelVia.dropna()    #remove os nulos
-scatter1 = alt.Chart(vitimasVelVia).mark_circle(size=60).encode(
-    x=alt.X('velocidade_max_via', title='Velocidade Máxima da Via',axis=alt.Axis(labelAngle=0, domain=False, tickSize=0)),
-    y=alt.Y('Número de vítimas'),
-    color='Condição da via',
-    size='Número de vítimas'
-).interactive().properties(
-    title='Relação entre a Condição, Velocidade máxima da via e a quantidade de acidentes com vítimas'
-).configure_title(  # formata o titulo
-    fontSize = 20,
-    anchor= 'middle',   # centraliza o titulo
-    color= 'black'
-).configure_legend(labelLimit=0)    #exibir o texto da legenda por completo
-st.altair_chart(scatter1, use_container_width=True)
-
-###  ###
-velFatal = df_selection[['Vítimas Fatais', 'velocidade_max_via']]
-
-
-heat = alt.Chart(velFatal).mark_rect().encode(
-    alt.X('Vítimas Fatais:Q', title='Vítimas Fatais', bin=alt.Bin(maxbins=60)),
-    alt.Y('velocidade_max_via:Q', title='Velocidade Máxima da Via', bin=alt.Bin(maxbins=40)),
-    alt.Color('count():Q', scale=alt.Scale(scheme='greenblue'))
-).interactive().properties(
-    title='Vítimas Fatais x Velocidade Máxima da Via'
-).configure_title(  # formata o titulo
-    fontSize = 20,
-    anchor= 'middle',   # centraliza o titulo
-    color= 'black'
+).properties(title="Correlação entre o número de vítimas fatais e as condições da via").transform_filter(
+    alt.FieldOneOfPredicate(field='condicao_via', oneOf=df_corr['condicao_via'].unique()[1:])
 )
-st.altair_chart(heat, use_container_width=True)
-
-
-scatter = alt.Chart(df_selection).mark_point().encode(x='Número de vítimas', y='velocidade_max_via')
-st.altair_chart(scatter, use_container_width=True)
+st.altair_chart(correlation_chart, use_container_width=True)
 
 
 
-#Valores totais de acidentes por ano (quantidade de vezes que cada ano aparece no dataset)
+st.write("Aqui está um gráfico de regressão para prever o número de acidentes baseado na hora do dia:")
+# Cria coluna com a hora como números
+df['hora_numerica'] = df['hora'].apply(lambda x: x.hour)
 
-lista = df.groupby('Ano')['Ano'].transform('count')
-# st.write(lista) #teste visual comrpovando número de vezes que x Ano está rpesente
-ano2015 = lista.loc[0] #linha 0 (inicial que é 2015) nessa 'lista' feita com o groupby
-indiceDeComeco = ano2015 #indiceDeComeco seta em que linha começará o próximo ano
-ano2016 = lista.loc[indiceDeComeco] #linha buscada de acordo com fim da contagem dos anos anteriores
-indiceDeComeco += ano2016
-ano2017 = lista.loc[indiceDeComeco]
-indiceDeComeco += ano2017
-ano2018 = lista.loc[indiceDeComeco]
-indiceDeComeco += ano2018
-ano2019 = lista.loc[indiceDeComeco]
-indiceDeComeco += ano2019
-ano2020 = lista.loc[indiceDeComeco]
-indiceDeComeco += ano2020
-ano2021 = lista.loc[indiceDeComeco]
+# Agrupa por hora e calcula a média do número de acidentes em cada hora
+hora_counts = df.groupby('hora_numerica')['Unnamed: 0'].agg(['count']).reset_index()
+hora_counts = hora_counts.groupby('hora_numerica')['count'].agg(['mean']).reset_index()
+hora_counts.columns = ['hora', 'mean']
+# Plota o gráfico de dispersão com a regressão linear
+fig, ax = plt.subplots()
+sns.regplot(x='hora', y='mean', data=hora_counts, scatter_kws={'s': 20}, ax = ax)
+st.pyplot(fig)
 
 
+st.write("Aqui está um gráfico de barras mostrando a frequência dos tipos de acidentes por condição da via")
+# agrupamento dos dados por tipo de acidente e condição da via
+df_grouped = df.groupby(['tipo', 'condicao_via']).size().reset_index(name='counts')
 
+# ordenação dos tipos de acidente em ordem decrescente e seleção dos 10 maiores
+df_grouped = df_grouped.sort_values(by='counts', ascending=False)
 
+# criação do gráfico de barras
+bars = alt.Chart(df_grouped).mark_bar().encode(
+    x=alt.X('counts:Q', axis=alt.Axis(title='Frequência')),
+    y=alt.Y('tipo:N', sort='-x', axis=alt.Axis(title='Tipo de Acidente')),
+    color=alt.Color('condicao_via:N', legend=alt.Legend(title='Condição da Via'))
+)
 
-hide_st_style = """
-            <style>
-            #MainMenu {visibility: hidden;}
-            footer {visibility: hidden;}
-            header {visibility: hidden;}
-            </style>
-            """
-st.markdown(hide_st_style, unsafe_allow_html=True)
+# exibição do gráfico
+st.altair_chart(bars, use_container_width=True)
