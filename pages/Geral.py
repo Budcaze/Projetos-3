@@ -3,89 +3,97 @@ import streamlit as st
 import altair as alt
 import seaborn as sns
 import matplotlib.pyplot as plt
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.model_selection import train_test_split
+from sklearn import metrics
+import numpy as np
 
+df_bruto = pd.read_parquet("data/DataSetAcidentesRecife.parquet")
+df_tratado = pd.read_parquet("data/DataSetAcidentesRecifeTratado.parquet")
 
-df = pd.read_parquet("data/DataSetAcidentesRecife.parquet")
-df_tratado = pd.read_parquet("data/DataSetAcidentesRecifeTratado.parquet") # Abertura do DataSet.
+st.set_page_config(page_title="Análise de Acidentes de Trânsito em Recife", 
+                   page_icon=":car:", 
+                   layout="wide")
 
 st.title("Análise de Acidentes de Trânsito em Recife")
 
-# Converte o tipo das colunas para inteiro
-df['vitimas'] = df['vitimas'].fillna(0) # substitui o vazio por 0
-df['vitimas'] = df['vitimas'].astype('int64') # Converte para inteiro
+plt.style.use('ggplot')
+sns.set_style("whitegrid")
+sns.set_palette("pastel")
 
-df['vitimasfatais'] = df['vitimasfatais'].fillna(0) # substitui o vazio por 0
-df['vitimasfatais'] = df['vitimasfatais'].astype('int64') # Converte para inteiro
+# Tratando dados
+df_bruto['vitimas'] = df_bruto['vitimas'].fillna(0).astype(int)
+df_bruto['vitimasfatais'] = df_bruto['vitimasfatais'].fillna(0).astype(int)
+df_bruto['situacao_semaforo'] = df_bruto['situacao_semaforo'].fillna(0)
+df_bruto['situacao_semaforo'].replace({'': 'sem informações', 0: 'sem informações'},regex=True,inplace=True)
+df_bruto['Ano'] = df_bruto['Ano'].astype(str)
+df_bruto = df_bruto.dropna(subset=['hora'])
+df_bruto['hora'] = pd.to_datetime(df_bruto['hora'], format='%H:%M:%S')
 
-# Converte o ano para string
-df['Ano'] = df['Ano'].astype('str') #Converte para string
-
-#converte para datatime
-df = df.dropna(subset=['hora'])
-df['hora'] = pd.to_datetime(df['hora'], format='%H:%M:%S')
-
-df['tipo'].replace({'MMMMMMMMMMMMNNNNNNNNNNNNNNC' :0},regex=True,inplace=True)
-df['tipo'].replace({'SANTO AMARO' :0},regex=True,inplace=True)
-df['tipo'] = df['tipo'].fillna(0)
-df['tipo'].replace({0 :'SEM INFORMACOES'},regex=True,inplace=True)
-df['tipo'].replace({'0' :'SEM INFORMACOES'},regex=True,inplace=True)
+df_bruto['tipo'].replace({'MMMMMMMMMMMMNNNNNNNNNNNNNNC' :0},regex=True,inplace=True)
+df_bruto['tipo'].replace({'SANTO AMARO' :0},regex=True,inplace=True)
+df_bruto['tipo'] = df_bruto['tipo'].fillna(0)
+df_bruto['tipo'].replace({0 :'SEM INFORMACOES'},regex=True,inplace=True)
+df_bruto['tipo'].replace({'0' :'SEM INFORMACOES'},regex=True,inplace=True)
 
 #Remover o Km/h da coluna velocidade_max_via
-df['velocidade_max_via'].replace({' km/h':''},regex=True,inplace=True)
-df['velocidade_max_via'].replace({'KM/H':''},regex=True,inplace=True)
-df['velocidade_max_via'].replace({'km':''},regex=True,inplace=True)
-df['velocidade_max_via'].replace({'KM':''},regex=True,inplace=True)
-df['velocidade_max_via'].replace({'N/I':''},regex=True,inplace=True)
-df['velocidade_max_via'].replace({'n/i':''},regex=True,inplace=True)
-df['velocidade_max_via'].replace({'/h':''},regex=True,inplace=True)
-df['velocidade_max_via'].replace({'30 e 40':'35'},regex=True,inplace=True)
-df['velocidade_max_via'].replace({'':'0'},regex=True,inplace=True)
+df_bruto['velocidade_max_via'].replace({' km/h':''},regex=True,inplace=True)
+df_bruto['velocidade_max_via'].replace({'KM/H':''},regex=True,inplace=True)
+df_bruto['velocidade_max_via'].replace({'km':''},regex=True,inplace=True)
+df_bruto['velocidade_max_via'].replace({'KM':''},regex=True,inplace=True)
+df_bruto['velocidade_max_via'].replace({'N/I':''},regex=True,inplace=True)
+df_bruto['velocidade_max_via'].replace({'n/i':''},regex=True,inplace=True)
+df_bruto['velocidade_max_via'].replace({'/h':''},regex=True,inplace=True)
+df_bruto['velocidade_max_via'].replace({'30 e 40':'35'},regex=True,inplace=True)
+df_bruto['velocidade_max_via'].replace({'':'0'},regex=True,inplace=True)
+
+#Tratar bairro
+#Define 0 para None e outros valores errados
+df_bruto['bairro'] = df_bruto['bairro'].fillna(0)
+df_bruto['bairro'] = df_bruto['bairro'].replace('BAIRRO DO RECIFE', 'RECIFE')
+df_bruto['bairro'] = df_bruto['bairro'].replace('BOA  VIAGEM', 'BOA VIAGEM')
+df_bruto['bairro'] = df_bruto['bairro'].replace('BOMBA DO HEMETERIO', 'BOMBA DO HEMETÉRIO')
+df_bruto['bairro'] = df_bruto['bairro'].replace('FABIO', 0)
+df_bruto['bairro'] = df_bruto['bairro'].replace('IPESEP', 'IPSEP')
+df_bruto['bairro'] = df_bruto['bairro'].replace('JOANA BEZERRA', 'ILHA JOANA BEZERRA')
+df_bruto['bairro'] = df_bruto['bairro'].replace('MARCELO', 0)
+df_bruto['bairro'] = df_bruto['bairro'].astype(str)
 
 #Alterando tipo da coluna para inteiro
-df['velocidade_max_via'] = df['velocidade_max_via'].fillna(0) # substitui o vazio por 0
-df['velocidade_max_via'] = df['velocidade_max_via'].astype('int64') # Converte para inteiro
+df_bruto['velocidade_max_via'] = df_bruto['velocidade_max_via'].fillna(0) # substitui o vazio por 0
+df_bruto['velocidade_max_via'] = df_bruto['velocidade_max_via'].astype('int64') # Converte para inteiro
 
 # SIDEBAR
-st.sidebar.header("Filtre aqui por ano:") #Cada SIDEBAR é composto pelo cabeçalho seguido da nossa variavel que vai armazenar o filtro e eu posso colocar as opções de acordo com o meu dataset e um padrão para começar o filtro, nesse caso eu coloquei para pegar todos as opções que tem nas colunas
-ano = st.sidebar.multiselect(
-    "Selecione o ano: ",
-    options=df["Ano"].unique(),
-    default=df["Ano"].unique()
-)
+with st.sidebar:
+    st.sidebar.title("Filtros")
+    # Filtro por ano
+    st.header("Filtre por ano")
+    ano = st.multiselect("Selecione o ano", options=df_bruto["Ano"].unique(), default=df_bruto["Ano"].unique())
+
+    # Filtro por bairro
+    st.header("Filtre por bairro")
+    bairro = st.multiselect("Selecione o bairro", options=df_bruto["bairro"].unique(), default=df_bruto["bairro"].unique())
 
 
 
-st.sidebar.header("Filtre aqui por bairro :")
-bairro = st.sidebar.multiselect(
-    "Selecione o bairro: ",
-    options=df["bairro"].unique(),
-    default=df["bairro"].unique()
-)
+df = df_bruto.query("Ano == @ano & bairro == @bairro")
 
-
-
-df_selection = df.query( #Aqui eu vou atribuir a varivavel que eu criei nos sidebars as colunas do dataset
-    "Ano == @ano & bairro == @bairro" #O @ significa que estou chamando a varivel que criei lá no sidebar
-)
-# st.dataframe(df_selection) #Aqui eu chamo nosso dataset para ele aparecer
-
+#GRAFICOS
 #bairro x numero de acidentes
-bairro_counts = df['bairro'].value_counts().reset_index()
-bairro_counts.columns = ['bairro', 'counts']
+bairro_counts = df['bairro'].value_counts().reset_index().rename(columns={'index':'bairro', 'bairro':'counts'})
 top_bairros = bairro_counts.head(15)['bairro'].tolist()
-
 chart_data = df.groupby(['bairro']).size().reset_index(name='counts')
 chart_data = chart_data[chart_data['bairro'].isin(top_bairros)]
 
-st.write("Aqui está um gráfico de barras que mostra a quantidade de acidentes por bairro:")
+st.write("Gráfico de barras que mostra a quantidade de acidentes por bairro")
 chart = alt.Chart(chart_data).mark_bar().encode(x='counts', y=alt.Y('bairro', sort='-x'), text='counts')
 st.altair_chart(chart, use_container_width=True)
 
 
 #tendência de acidentes ao longo do tempo
 st.write("Aqui está um gráfico de linhas que mostra a tendência dos acidentes ao longo do tempo:")
-chart_data = df.groupby(['data']).size().reset_index(name='counts')
-chart = alt.Chart(chart_data).mark_line().encode(x='data', y='counts')
+chart_data = df.groupby(['Ano']).size().reset_index(name='counts')
+chart = alt.Chart(chart_data).mark_line().encode(x=alt.X('Ano', axis=alt.AxisConfig(labelAngle=0)), y=alt.Y('counts', title='Número de acidentes'))
 st.altair_chart(chart, use_container_width=True)
 
 
@@ -95,6 +103,22 @@ st.write("Aqui está um gráfico de barras que mostra a quantidade de acidentes 
 chart_data = df.groupby(df['hora'].dt.hour).size().reset_index(name='counts')
 chart = alt.Chart(chart_data).mark_bar().encode(x=alt.X('hora:O', title='Hora do dia', axis=alt.AxisConfig(labelAngle=0)), y=alt.Y('counts', title='Número de acidentes'))
 st.altair_chart(chart, use_container_width=True)
+
+
+
+st.write("Aqui está um gráfico de regressão para prever o número de acidentes baseado na hora do dia:")
+# Cria coluna com a hora como números
+df['hora_numerica'] = df['hora'].apply(lambda x: x.hour)
+
+# Agrupa por hora e calcula a média do número de acidentes em cada hora
+hora_counts = df.groupby('hora_numerica')['Unnamed: 0'].agg(['count']).reset_index()
+hora_counts = hora_counts.groupby('hora_numerica')['count'].agg(['mean']).reset_index()
+hora_counts.columns = ['hora', 'mean']
+# Plota o gráfico de dispersão com a regressão linear
+fig, ax = plt.subplots(figsize=(4, 2.2))
+sns.regplot(x='hora', y='mean', data=hora_counts, scatter_kws={'s': 20}, ax = ax)
+ax.set_ylabel('Média')
+st.pyplot(fig)
 
 
 st.write("Aqui está um gráfico de barras que mostra a correlação das vítimas fatais com a condição da via:")
@@ -119,21 +143,6 @@ correlation_chart = alt.Chart(df_corr).mark_bar().encode(
 st.altair_chart(correlation_chart, use_container_width=True)
 
 
-
-st.write("Aqui está um gráfico de regressão para prever o número de acidentes baseado na hora do dia:")
-# Cria coluna com a hora como números
-df['hora_numerica'] = df['hora'].apply(lambda x: x.hour)
-
-# Agrupa por hora e calcula a média do número de acidentes em cada hora
-hora_counts = df.groupby('hora_numerica')['Unnamed: 0'].agg(['count']).reset_index()
-hora_counts = hora_counts.groupby('hora_numerica')['count'].agg(['mean']).reset_index()
-hora_counts.columns = ['hora', 'mean']
-# Plota o gráfico de dispersão com a regressão linear
-fig, ax = plt.subplots()
-sns.regplot(x='hora', y='mean', data=hora_counts, scatter_kws={'s': 20}, ax = ax)
-st.pyplot(fig)
-
-
 st.write("Aqui está um gráfico de barras mostrando a frequência dos tipos de acidentes por condição da via")
 # agrupamento dos dados por tipo de acidente e condição da via
 df_grouped = df.groupby(['tipo', 'condicao_via']).size().reset_index(name='counts')
@@ -150,3 +159,105 @@ bars = alt.Chart(df_grouped).mark_bar().encode(
 
 # exibição do gráfico
 st.altair_chart(bars, use_container_width=True)
+
+
+# Selecionando as colunas que serão utilizadas na análise
+X = df[['velocidade_max_via']]
+
+# Definindo a variável target
+y = df['vitimas']
+
+# Dividindo o dataset em conjunto de treino e teste
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
+
+# Criando o modelo de árvore de decisão
+tree = DecisionTreeClassifier(max_depth=3, random_state=42)
+
+# Treinando o modelo
+tree.fit(X_train, y_train)
+
+# Fazendo as previsões com o conjunto de teste
+y_pred = tree.predict(X_test)
+st.text('Foi calculado com o modelo de árvore de decisão a acurácia de previsões de número de vítimas em relação a \nvelocidade máxima da via, e a seguir está o resultado:')
+# Avaliando o desempenho do modelo
+st.text(f"Acurácia: {metrics.accuracy_score(y_test, y_pred)}")
+
+st.text("Uma acurácia de 0,773 significa que o modelo de árvore de decisão está correto em\n 77,3%' das previsões feitas em novos dados.")
+
+st.write("Aqui está um gráfico de dispersão para mostrar a relação entre o tipo do acidente e a presença de vitima no acidente")
+# Plota um gráfico de dispersão com os pontos agrupados por ano e tipo de acidente
+chart = alt.Chart(df).mark_circle(size=60).encode(
+    x=alt.X('Ano', axis=alt.AxisConfig(labelAngle=0)),
+    y=alt.Y('vitimas', title='Número de vítimas', aggregate='sum'),
+    color='situacao_semaforo',
+    tooltip=['Ano', alt.Tooltip('vitimas', aggregate='sum'), 'situacao_semaforo']
+).interactive()
+
+# Exibe o gráfico no Streamlit
+st.altair_chart(chart, use_container_width=True)
+
+
+
+
+# Converta a coluna data para o tipo datetime
+df_data = pd.to_datetime(df['data'], format='%Y-%m-%d').dt.to_period('M')
+# Adicione uma nova coluna chamada mes que contém apenas o mês da data
+df['mes'] = df_data.dt.month
+
+
+st.write("Aqui está um gráfico de radar que contem a comparação entre o número de acidentes em diferentes meses do ano")
+df_vm = df.groupby('mes')['vitimas'].sum().reset_index(name='vitimas')
+fig, ax = plt.subplots(figsize=(3, 5), subplot_kw=dict(polar=True))
+
+# Define os limites do gráfico de radar
+ax.set_ylim([0, df_vm['vitimas'].max()+2])
+
+# Define os ângulos e rótulos dos eixos
+angles = [n / float(len(df_vm['mes'])) * 2 * 3.14159 for n in range(len(df_vm['mes']))]
+labels = [str(mes) for mes in df_vm['mes']]
+ax.set_xticks(angles)
+ax.set_xticklabels(labels)
+
+# Adiciona os dados ao gráfico
+ax.plot(angles, df_vm['vitimas'], 'o-', linewidth=2)
+
+# Adiciona um preenchimento ao gráfico
+ax.fill(angles, df_vm['vitimas'], alpha=0.25)
+
+# Define o título do gráfico
+ax.set_title('Quantidade de vítimas por mês', size=20, y=1.05)
+
+# Mostra o gráfico
+st.pyplot(fig)
+
+
+
+
+st.write("Aqui está um gráfico de linhas mostrando a evolução temporal da frequência de acidentes por bairro")
+# Agrupa os dados por bairro e data e conta o número de acidentes em cada grupo
+df_grouped = df.groupby(['bairro', 'Ano']).size().reset_index(name='count')
+
+# Ordena o DataFrame em ordem decrescente de contagem e seleciona os 10 primeiros bairros
+top10_bairros = df_grouped.groupby('bairro')['count'].sum().reset_index(name='count_total')\
+    .sort_values(by='count_total', ascending=False).head(10)['bairro'].values
+
+# Cria uma figura e um eixo
+fig, ax = plt.subplots()
+
+# Itera pelos bairros únicos no DataFrame e adiciona uma linha para cada um dos 10 bairros com maior número de vítimas
+for bairro in top10_bairros:
+    # Seleciona apenas as linhas correspondentes ao bairro atual
+    Ano_bairro = df_grouped[df_grouped['bairro'] == bairro]
+    
+    # Plota a linha correspondente ao bairro atual
+    ax.plot(Ano_bairro['Ano'], Ano_bairro['count'], label=bairro)
+
+# Adiciona uma legenda
+ax.legend(fontsize=6)
+
+# Define os rótulos dos eixos
+ax.set_xlabel('Ano')
+ax.set_ylabel('Número de acidentes')
+
+# Mostra o gráfico usando st.pyplot()
+st.pyplot(fig)
