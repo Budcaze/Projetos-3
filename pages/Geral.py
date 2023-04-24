@@ -7,6 +7,14 @@ from sklearn.tree import DecisionTreeClassifier
 from sklearn.model_selection import train_test_split
 from sklearn import metrics
 import numpy as np
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LinearRegression
+from sklearn.tree import DecisionTreeRegressor
+from sklearn.metrics import r2_score, mean_absolute_error, mean_squared_error, classification_report, accuracy_score
+from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
+from sklearn.preprocessing import OneHotEncoder
+from sklearn import svm
+from sklearn.svm import SVR
 
 df_bruto = pd.read_parquet("data/DataSetAcidentesRecife.parquet")
 df_tratado = pd.read_parquet("data/DataSetAcidentesRecifeTratado.parquet")
@@ -86,7 +94,7 @@ chart_data = df.groupby(['bairro']).size().reset_index(name='counts')
 chart_data = chart_data[chart_data['bairro'].isin(top_bairros)]
 
 st.write("Gráfico de barras que mostra a quantidade de acidentes por bairro")
-chart = alt.Chart(chart_data).mark_bar().encode(x='counts', y=alt.Y('bairro', sort='-x'), text='counts')
+chart = alt.Chart(chart_data).mark_bar().encode(x=alt.X('counts', title="Número de acidentes"), y=alt.Y('bairro', sort='-x'))
 st.altair_chart(chart, use_container_width=True)
 
 
@@ -180,16 +188,16 @@ tree.fit(X_train, y_train)
 y_pred = tree.predict(X_test)
 st.text('Foi calculado com o modelo de árvore de decisão a acurácia de previsões de número de vítimas em relação a \nvelocidade máxima da via, e a seguir está o resultado:')
 # Avaliando o desempenho do modelo
-st.text(f"Acurácia: {metrics.accuracy_score(y_test, y_pred)}")
+#st.text(f"Acurácia: {metrics.accuracy_score(y_test, y_pred)}")
 
-st.text("Uma acurácia de 0,773 significa que o modelo de árvore de decisão está correto em\n 77,3%' das previsões feitas em novos dados.")
+#st.text("Uma acurácia de 0,773 significa que o modelo de árvore de decisão está correto em\n 77,3%' das previsões feitas em novos dados.")
 
 st.write("Aqui está um gráfico de dispersão para mostrar a relação entre o tipo do acidente e a presença de vitima no acidente")
 # Plota um gráfico de dispersão com os pontos agrupados por ano e tipo de acidente
 chart = alt.Chart(df).mark_circle(size=60).encode(
     x=alt.X('Ano', axis=alt.AxisConfig(labelAngle=0)),
     y=alt.Y('vitimas', title='Número de vítimas', aggregate='sum'),
-    color='situacao_semaforo',
+    color=alt.Color('situacao_semaforo', title="Situação do Semáforo"),
     tooltip=['Ano', alt.Tooltip('vitimas', aggregate='sum'), 'situacao_semaforo']
 ).interactive()
 
@@ -261,3 +269,78 @@ ax.set_ylabel('Número de acidentes')
 
 # Mostra o gráfico usando st.pyplot()
 st.pyplot(fig)
+
+
+######## Machine learning ############
+# Carregando os dados
+df = pd.read_parquet("data/DataSetAcidentesRecifeTratado.parquet")
+
+
+st.title("Modelos de Machine Learning")
+
+newDF2 = df[['Ano', 'vitimas', 'vitimasfatais', 'velocidade_max_via']]
+A = newDF2.drop(['vitimas'], axis=1)
+b = df['vitimas']
+A_train, A_test, b_train, b_test = train_test_split(A, b, test_size=0.2, random_state=42)
+
+# Criando um modelo de classificação com Random Forest
+clf = RandomForestClassifier()
+clf.fit(A_train, b_train)
+
+# Avaliando o desempenho do modelo com métricas de classificação
+b_pred = clf.predict(A_test)
+report2 = classification_report(b_test, b_pred)
+st.text(report2)
+
+
+df_teste = df
+
+# remover colunas desnecessárias
+df_teste = df_teste.drop(['data', 'hora', 'bairro', 'endereco', 'numero', 'detalhe_endereco_acidente', 
+              'complemento', 'bairro_cruzamento', 'num_semaforo', 'acidente_verificado', 'ponto_controle', 'sentido_via',
+              'situacao_placa','situacao_semaforo', 'divisao_via1', 'divisao_via2', 'divisao_via3'], axis=1)
+
+# dividir o dataset em treino e teste
+X = df_teste.drop(['vitimas', 'vitimasfatais'], axis=1)
+y = df_teste['vitimasfatais']
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+# modelo de regressão linear
+lr_model = LinearRegression()
+lr_model.fit(X_train, y_train)
+lr_pred = lr_model.predict(X_test)
+
+# modelo de árvore de decisão
+dt_model = DecisionTreeRegressor(random_state=42)
+dt_model.fit(X_train, y_train)
+dt_pred = dt_model.predict(X_test)
+
+# modelo de Random Forest
+rf = RandomForestRegressor(n_estimators=100, random_state=42)
+rf.fit(X_train, y_train)
+
+# Modelo de SVM
+svm_model = SVR()
+svm_model.fit(X_train, y_train)
+
+# avaliar o desempenho dos modelos
+st.text(f"Regressão Linear - R2 Score: {r2_score(y_test, lr_pred)}")
+st.text(f"Regressão Linear - RMSE: {np.sqrt(mean_squared_error(y_test, lr_pred))}")
+
+# Avaliar o desempenho do modelo de árvore de decisão
+r2_dt = r2_score(y_test, dt_pred)
+rmse_dt = np.sqrt(mean_squared_error(y_test, dt_pred))
+st.text(f"R² do modelo de Árvore de Decisão:{r2_dt}")
+st.text(f"RMSE do modelo de Árvore de Decisão:{rmse_dt}")
+
+# Calcular o erro médio quadrado do modelo Random Forest no conjunto de teste
+y_pred_rf = rf.predict(X_test)
+mse_rf = mean_squared_error(y_test, y_pred_rf)
+st.text(f"Erro quadrado médio do modelo Random Forest: {mse_rf}")
+
+# Avaliar o desempenho do modelo de SVM
+y_pred_svm = svm_model.predict(X_test)
+r2_svm = r2_score(y_test, y_pred_svm)
+mse_svm = mean_squared_error(y_test, y_pred_svm)
+st.text(f"R² do modelo de SVM: {r2_svm}")
+st.text(f"Erro quadrado médio do modelo de SVM: {mse_svm}")
