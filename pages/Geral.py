@@ -15,6 +15,7 @@ from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
 from sklearn.preprocessing import OneHotEncoder
 from sklearn import svm
 from sklearn.svm import SVR
+import datetime
 
 df_bruto = pd.read_parquet("data/DataSetAcidentesRecife.parquet")
 df_tratado = pd.read_parquet("data/DataSetAcidentesRecifeTratado.parquet")
@@ -211,6 +212,7 @@ st.altair_chart(chart, use_container_width=True)
 df_data = pd.to_datetime(df['data'], format='%Y-%m-%d').dt.to_period('M')
 # Adicione uma nova coluna chamada mes que contém apenas o mês da data
 df['mes'] = df_data.dt.month
+meses = [datetime.date(2000, m, 1).strftime('%b') for m in range(1, 13)]
 
 
 st.write("Aqui está um gráfico de radar que contem a comparação entre o número de acidentes em diferentes meses do ano")
@@ -222,7 +224,8 @@ ax.set_ylim([0, df_vm['vitimas'].max()+2])
 
 # Define os ângulos e rótulos dos eixos
 angles = [n / float(len(df_vm['mes'])) * 2 * 3.14159 for n in range(len(df_vm['mes']))]
-labels = [str(mes) for mes in df_vm['mes']]
+#labels = [str(mes) for mes in df_vm['mes']]
+labels = meses
 ax.set_xticks(angles)
 ax.set_xticklabels(labels)
 
