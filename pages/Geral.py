@@ -94,28 +94,23 @@ top_bairros = bairro_counts.head(15)['bairro'].tolist()
 chart_data = df.groupby(['bairro']).size().reset_index(name='counts')
 chart_data = chart_data[chart_data['bairro'].isin(top_bairros)]
 
-st.write("Gráfico de barras que mostra a quantidade de acidentes por bairro")
+st.write("Gráfico de barras, mostrando a distribuição de acidentes de trânsito por bairros no Recife. Sendo possível ver o destaque desigual de Boa Viagem; Uma média de 1.105 acidentes por ano, enquanto que os demais bairros apresentam médias menores. A distribuição desigual dos acidentes de trânsito pelos bairros podem indicar que existem outros fatores que favorecem expressivamente acidentes em Boa Viagem.")
 chart = alt.Chart(chart_data).mark_bar().encode(x=alt.X('counts', title="Número de acidentes"), y=alt.Y('bairro', sort='-x'))
 st.altair_chart(chart, use_container_width=True)
 
-
 #tendência de acidentes ao longo do tempo
-st.write("Aqui está um gráfico de linhas que mostra a tendência dos acidentes ao longo do tempo:")
+st.write("Gráfico de linhas, demonstrando a evolução do quantitativo de acidentes ao longo do tempo. Ao analisar esse gráfico, é possível notar que houve um aumento nos números de acidentes de trânsito entre 2015 e 2019, com um pico de 12.044 acidentes em 2019. Entretanto houve uma queda significativa nos números de acidentes de 2020 a 2021, com 4.092 e 2.380 acidentes, respectivamente, sendo possível observar o impacto gerado pela pandemia na relação dos acidentes.")
 chart_data = df.groupby(['Ano']).size().reset_index(name='counts')
 chart = alt.Chart(chart_data).mark_line().encode(x=alt.X('Ano', axis=alt.AxisConfig(labelAngle=0)), y=alt.Y('counts', title='Número de acidentes'))
 st.altair_chart(chart, use_container_width=True)
 
-
-
 #hora do dia x numero de acidentes
-st.write("Aqui está um gráfico de barras que mostra a quantidade de acidentes por hora no dia:")
+st.write("Gráfico de barras, no qual é possível observar a distribuição do quantitativo de acidentes globais durante o horário do dia, ou seja, os horários mais comuns para o acontecimento dos acidentes. É possível notar que há uma tendência de aumento no número de acidentes durante o período matutino, com pico por volta das 8 horas da manhã, e no período vespertino, com pico por volta das 17 horas. Esses horários são próximos aos horários de pico de trânsito na cidade, que ocorrem quando as pessoas estão indo ou voltando do trabalho ou das escolas. Quando traçamos um paralelo com os horários de pico de trabalho e escola, podemos observar que os horários de maior número de acidentes, às 8 horas e às 17 horas, coincidem, que é quando muitas pessoas começam a se deslocar para os seus destinos.")
 chart_data = df.groupby(df['hora'].dt.hour).size().reset_index(name='counts')
 chart = alt.Chart(chart_data).mark_bar().encode(x=alt.X('hora:O', title='Hora do dia', axis=alt.AxisConfig(labelAngle=0)), y=alt.Y('counts', title='Número de acidentes'))
 st.altair_chart(chart, use_container_width=True)
 
-
-
-st.write("Aqui está um gráfico de regressão para prever o número de acidentes baseado na hora do dia:")
+st.write("O gráfico abaixo permite visualização do aumento gradual do número de acidentes ao longo do dia, bem como a previsão do número desses acidentes. A linha de regressão reforça a relação do horário de pico com aumento no número de acidentes, o horário das 8 horas tem uma média superior a 4.000 acidentes, mantendo-se acima de 3.000 acidentes até próximo das 18 horas.")
 # Cria coluna com a hora como números
 df['hora_numerica'] = df['hora'].apply(lambda x: x.hour)
 
@@ -129,8 +124,7 @@ sns.regplot(x='hora', y='mean', data=hora_counts, scatter_kws={'s': 20}, ax = ax
 ax.set_ylabel('Média')
 st.pyplot(fig)
 
-
-st.write("Aqui está um gráfico de barras que mostra a correlação das vítimas fatais com a condição da via:")
+st.write("Gráfico de barras, o qual demostra a correlação da quantidade de vítimas fatais com a condição da via. Nele é possível observar um número muito maior de acidente em via seca, no que toca aos quatro valores no eixo x: molhada, oleosa, outros e seca, onde a condição oleosa e outros apresentaram valor zero no eixo Y, enquanto que as condições molhada e seca apresentaram valores de cerca de 10 e 60, respectivamente, ambas as colunas ficaram na cor verde. Isso sugere que, em geral, as condições da via molhada e seca estão positivamente correlacionadas com o número de vítimas fatais em acidentes de trânsito.")
 # Criar novo DataFrame com as colunas relevantes
 df_corr = df[["condicao_via", "vitimasfatais"]]
 
@@ -146,13 +140,13 @@ correlation_chart = alt.Chart(df_corr).mark_bar().encode(
         alt.datum.vitimasfatais > 0,
         alt.value("green"), alt.value("red")
     )
-).properties(title="Correlação entre o número de vítimas fatais e as condições da via").transform_filter(
+).properties(title="").transform_filter(
     alt.FieldOneOfPredicate(field='condicao_via', oneOf=df_corr['condicao_via'].unique()[1:])
 )
 st.altair_chart(correlation_chart, use_container_width=True)
 
 
-st.write("Aqui está um gráfico de barras mostrando a frequência dos tipos de acidentes por condição da via")
+# st.write("Gráfico de barras demostrando a frequência dos tipos de acidentes em determinadas condições de via")
 # agrupamento dos dados por tipo de acidente e condição da via
 df_grouped = df.groupby(['tipo', 'condicao_via']).size().reset_index(name='counts')
 
@@ -167,7 +161,7 @@ bars = alt.Chart(df_grouped).mark_bar().encode(
 )
 
 # exibição do gráfico
-st.altair_chart(bars, use_container_width=True)
+# st.altair_chart(bars, use_container_width=True)
 
 
 # Selecionando as colunas que serão utilizadas na análise
@@ -187,13 +181,13 @@ tree.fit(X_train, y_train)
 
 # Fazendo as previsões com o conjunto de teste
 y_pred = tree.predict(X_test)
-st.text('Foi calculado com o modelo de árvore de decisão a acurácia de previsões de número de vítimas em relação a \nvelocidade máxima da via, e a seguir está o resultado:')
+# st.text('Foi calculado com o modelo de árvore de decisão a acurácia de previsões de número de vítimas em relação a \nvelocidade máxima da via, e a seguir está o resultado:')
 # Avaliando o desempenho do modelo
 #st.text(f"Acurácia: {metrics.accuracy_score(y_test, y_pred)}")
 
 #st.text("Uma acurácia de 0,773 significa que o modelo de árvore de decisão está correto em\n 77,3%' das previsões feitas em novos dados.")
 
-st.write("Aqui está um gráfico de dispersão para mostrar a relação entre o tipo do acidente e a presença de vitima no acidente")
+st.write("Gráfico de dispersão o qual demostra a relação entre o estado do semafórico da via e a presença de vitimas dos acidentes. Pode-se observar que a situação do semáforo 'Não existe' foi a que apresentou a maior quantidade de vítimas em todos os anos, exceto em 2018, quando a situação do semáforo 'Sem informações' teve a maior quantidade de vítimas. Por outro lado, a situação do semáforo 'Desligado' foi a que apresentou a menor quantidade de vítimas em todos os anos.")
 # Plota um gráfico de dispersão com os pontos agrupados por ano e tipo de acidente
 chart = alt.Chart(df).mark_circle(size=60).encode(
     x=alt.X('Ano', axis=alt.AxisConfig(labelAngle=0)),
@@ -205,9 +199,6 @@ chart = alt.Chart(df).mark_circle(size=60).encode(
 # Exibe o gráfico no Streamlit
 st.altair_chart(chart, use_container_width=True)
 
-
-
-
 # Converta a coluna data para o tipo datetime
 df_data = pd.to_datetime(df['data'], format='%Y-%m-%d').dt.to_period('M')
 # Adicione uma nova coluna chamada mes que contém apenas o mês da data
@@ -215,7 +206,7 @@ df['mes'] = df_data.dt.month
 meses = [datetime.date(2000, m, 1).strftime('%b') for m in range(1, 13)]
 
 
-st.write("Aqui está um gráfico de radar que contem a comparação entre o número de acidentes em diferentes meses do ano")
+st.write("Observando o gráfico de radar abaixo, podemos notar que os meses de setembro a dezembro possuem os maiores números de vítimas de trânsito, com valores acima da média anual. Por outro lado, os meses de fevereiro e abril possuem os menores números de vítimas, abaixo da média anual, esses valores nestes meses podem estar relacionados com fatores climáticos, os meses de setembro e outubro correspondem a época de transição entre o inverno e o verão, e podem ser caracterizados por temperaturas mais elevadas e clima mais seco, o que pode aumentar o fluxo de trânsito e, consequentemente, o risco de acidentes. Também podem estar relacionados a fatores sazonais, alguns meses do ano podem apresentar um maior número de eventos ou atividades que aumentem o fluxo de veículos e pedestres, como feriados, eventos esportivos, festivais e outras celebrações.")
 df_vm = df.groupby('mes')['vitimas'].sum().reset_index(name='vitimas')
 fig, ax = plt.subplots(figsize=(3, 5), subplot_kw=dict(polar=True))
 
@@ -244,7 +235,7 @@ st.pyplot(fig)
 
 
 
-st.write("Aqui está um gráfico de linhas mostrando a evolução temporal da frequência de acidentes por bairro")
+st.write("Gráfico de linhas demostrando a evolução temporal da frequência de acidentes por bairro. Sendo possível explorar de forma aprofundada a evolução dos acidentes de trânsito ao longo do tempo em cada bairro, além de notarmos o impacto da pandemia separadamente em todos eles.")
 # Agrupa os dados por bairro e data e conta o número de acidentes em cada grupo
 df_grouped = df.groupby(['bairro', 'Ano']).size().reset_index(name='count')
 
